@@ -10,3 +10,23 @@
 * {
   font-family: 'BrutalType', serif;
 }
+
+.btn > img {
+  filter: invert(0);
+  transition: 0.2s ease-in-out;
+}
+
+.btn:hover > img, .btn.active > img {
+  filter: invert(1);
+}
+
+.fade-left-enter-active,
+.fade-left-leave-active {
+  transition: 0.5s ease;
+}
+
+.fade-left-enter-from,
+.fade-left-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
