@@ -1,0 +1,12 @@
+@import "/node_modules/bootstrap/scss/bootstrap";
+@import "../fonts/Activist_webkit/Activist.css";
+@import "../fonts/BrutalType-Regular/BrutalType-Regular.css";
+
+:root {
+  --white-color: #fff;
+  --black-color: #000;
+}
+
+* {
+  font-family: 'BrutalType', serif;
+}
