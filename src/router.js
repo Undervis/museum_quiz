@@ -2,7 +2,7 @@ import {createWebHistory, createRouter} from "vue-router";
 import Home from "@/Home.vue";
 import ManageBoard from "@/ManageBoard.vue";
 import Quiz from "@/Quiz.vue";
-import EditQuiz from "@/components/EditQuiz.vue";
+import EditQuiz from "@/components/EditQuiz/EditQuiz.vue";
 
 const routes = [
     {
@@ -18,8 +18,7 @@ const routes = [
     {
         path: "/manage/quiz",
         name: "EditQuiz",
-        component: EditQuiz,
-        query: {question: 0}
+        component: EditQuiz
     },
     {
         path: "/quiz/:id",
