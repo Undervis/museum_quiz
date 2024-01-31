@@ -1,11 +1,12 @@
 <script setup>
 import {reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import { Cropper } from 'vue-advanced-cropper'
+import {Cropper} from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css';
 
 let router = useRouter()
 let quiz_img = ref()
+let quiz_img_crop = ref({file: "", show: false})
 let quiz_data = ref({
   title: "Новый квиз",
   description: "",
@@ -36,6 +37,18 @@ function deleteQuestion(index) {
   }
 }
 
+function uploadImg() {
+  quiz_img.value.click();
+  quiz_img.value.onchange = function () {
+    let reader = new FileReader();
+    reader.readAsDataURL(quiz_img.value.files[0]);
+    reader.onload = function (e) {
+      quiz_img_crop.value.show = true
+      quiz_img_crop.value.file = e.target.result
+    }
+  }
+}
+
 function isActive(index) {
   return router.currentRoute.value.query.question === index.toString()
 }
@@ -47,6 +60,7 @@ function isActive(index) {
       <span class="fs-2 font-bold">{{ quiz_data.title }}</span>
       <button class="btn btn-dark ms-auto">Вернуться назад</button>
     </div>
+    <!-- Панель вопросов -->
     <div class="row my-4">
       <div class="col-2">
         <div class="d-flex flex-column gap-2">
@@ -68,6 +82,7 @@ function isActive(index) {
           </button>
         </div>
       </div>
+      <!-- Параметры -->
       <div class="col">
         <section class="d-flex flex-column gap-2">
           <div class="hstack">
@@ -77,17 +92,13 @@ function isActive(index) {
               <input class="form-check-input" id="to_publish" v-model="quiz_data.to_publish" type="checkbox">
             </div>
           </div>
-          <div class="card d-flex">
-            <div class="card-header d-flex" style="height: 20rem">
-              <img class="card-img-top m-auto" src="../assets/icons/file-earmark-image.svg" height="48"/>
-            </div>
-            <div class="card-body">
-              <span>{{ quiz_data.img }}</span>
-              <input ref="quiz_img" type="file" @change="console.log($refs.quiz_img.value)" class="form-control">
-            </div >
+          <div class="d-flex p-2">
+            <img v-if="!quiz_img_crop.show" @click="uploadImg" class="card-img m-auto q-img" src="../assets/icons/file-earmark-image.svg"
+                 height="48"/>
+            <input hidden ref="quiz_img" accept="image/jpeg, image/png" type="file" class="form-control">
+            <cropper v-if="quiz_img_crop.show" class="m-auto q-img-crop" :src="quiz_img_crop.file"
+            autoZoom minWidth="1000" minHeight="300" checkOrientation/>
           </div>
-
-          <cropper hidden class="cropper" src="/src/assets/lb.jpg"/>
           <div class="form-floating">
             <input type="text" placeholder="" class="form-control" v-model="quiz_data.title">
             <label for="title">Название</label>
@@ -103,10 +114,21 @@ function isActive(index) {
 </template>
 
 <style scoped>
-.q-x-btn {
-  position: absolute;
+.q-img {
+  height: 300px;
+  padding: 7rem;
+  border: 1px dashed black;
+  border-radius: 0.5rem;
+}
+
+.q-img-crop {
+  height: 300px;
+  width: auto;
+  border-radius: 0.5rem;
+}
+
+.q-img:hover {
   cursor: pointer;
-  top: 25%;
-  left: -2rem;
+  background-color: #ebebeb;
 }
 </style>
