@@ -4,7 +4,7 @@ import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.bubble.css';
 import {ref} from "vue";
 
-let props = defineProps(["options"])
+let props = defineProps(["options", "type", "img_finish"])
 
 const img_state = ref({file: "", show: false, complete: false})
 let img_selector = ref()
@@ -36,6 +36,7 @@ function uploadImg() {
 function cropImg() {
   const {canvas} = img_cropper.value.getResult()
   canvas.toBlob((blob) => {
+    props.img_finish.src = URL.createObjectURL(blob)
     img_result.value.src = URL.createObjectURL(blob)
     img_result.value.onload = function () {
       img_state.value.show = false
@@ -46,7 +47,7 @@ function cropImg() {
 </script>
 
 <template>
-  <section class="d-flex">
+  <section class="d-flex flex-wrap">
     <div class="d-flex flex-column w-100 gap-2 img-placeholder overflow-hidden"
          :class="{'d-none': img_state.complete,
          'a-1-1': crop_options.aspectRatio === 1,
@@ -56,9 +57,9 @@ function cropImg() {
       <img alt="..." class="card-img m-auto"
            src="/src/assets/icons/file-earmark-image.svg"
            height="48"/>
-      <span class="text-muted mx-auto">Перетащите файл или нажмите чтобы выбрать</span>
+      <span class="text-muted mx-auto text-center">Нажмите чтобы выбрать изображение</span>
     </div>
-    <div class="d-flex img-result border rounded overflow-hidden"
+    <div class="d-flex img-result border rounded overflow-hidden flex-grow-1"
          :class="{'d-none': !img_state.complete,
          'a-1-1': crop_options.aspectRatio === 1,
          'a-5-2': crop_options.aspectRatio === 5/2,
@@ -73,7 +74,7 @@ function cropImg() {
       <div class="modal-window">
         <div class="modal-content">
           <progress class="w-50 position-absolute" style="filter: saturate(0); z-index: 1"/>
-          <cropper class="q-img-crop cropper rounded" ref="img_cropper" style="z-index: 10"
+          <cropper class="q-img-crop overflow-x-scroll cropper rounded" ref="img_cropper" style="z-index: 10"
                    :src="img_state.file" checkOrientation
                    :stencil-props="{aspectRatio: crop_options.aspectRatio}"/>
         </div>
@@ -90,14 +91,14 @@ function cropImg() {
 .img-placeholder {
   position: relative;
   padding: 8rem;
-  max-height: 30rem;
+  height: min-content;
   border: 1px dashed black;
   border-radius: 0.5rem;
 }
 
 .img-result {
   position: relative;
-  max-height: 30rem;
+  height: min-content;
   .badge {
     position: absolute;
     margin: 0.5rem;
@@ -124,7 +125,10 @@ function cropImg() {
 .q-img-crop {
   border-radius: 0.5rem;
   height: auto;
+  max-height: 45rem;
   width: auto;
+  max-width: 65rem;
+  min-width: min-content;
 }
 
 .modal-background {
@@ -158,5 +162,6 @@ function cropImg() {
   padding: 0.5rem;
   justify-content: center;
   align-items: center;
+  max-height: 50rem;
 }
 </style>

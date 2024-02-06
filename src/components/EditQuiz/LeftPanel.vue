@@ -10,7 +10,7 @@ function isActive(index) {
 </script>
 
 <template>
-  <div class="d-flex flex-column gap-2">
+  <div class="d-flex flex-column gap-2 card card-body">
     <button @click="$router.replace({query: {general: 0}})" class="btn btn-outline-dark"
             :class="{'active': $router.currentRoute.value.query.general}">Параметры
       <img alt="settings" class="ms-2" src="/src/assets/icons/gear-fill.svg"/>
