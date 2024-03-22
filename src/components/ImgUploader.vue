@@ -36,7 +36,9 @@ function uploadImg() {
 function cropImg() {
   const {canvas} = img_cropper.value.getResult()
   canvas.toBlob((blob) => {
-    props.img_finish.src = URL.createObjectURL(blob)
+    if (props.img_finish) {
+      props.img_finish.src = URL.createObjectURL(blob)
+    }
     img_result.value.src = URL.createObjectURL(blob)
     img_result.value.onload = function () {
       img_state.value.show = false
@@ -44,21 +46,42 @@ function cropImg() {
     }
   })
 }
+
+// Загрузка изображения на сервер
+function uploadToServer() {
+  let formData = new FormData()
+  formData.append('file', img_result.value.file)
+  axios.post('/upload', formData, {
+    headers: {
+      'Content-Type':'multipart/form-data'
+    }
+  }).then(res => {
+    if (res.data.success) {
+      img_state.value.show = false
+      img_state.value.complete = true
+      img_result.value.src = res.data.url
+    }
+  })
+}
 </script>
 
 <template>
   <section class="d-flex flex-wrap">
+    <!-- Плейсхолдер изображения -->
     <div class="d-flex flex-column w-100 gap-2 img-placeholder overflow-hidden"
          :class="{'d-none': img_state.complete,
          'a-1-1': crop_options.aspectRatio === 1,
          'a-5-2': crop_options.aspectRatio === 5/2,
          'a-16-9': crop_options.aspectRatio === 16/9}"
          @click="!img_state.show ? uploadImg() : null">
-      <img alt="..." class="card-img m-auto"
-           src="/src/assets/icons/file-earmark-image.svg"
-           height="48"/>
-      <span class="text-muted mx-auto text-center">Нажмите чтобы выбрать изображение</span>
+      <div class="m-auto d-flex flex-column gap-2">
+        <img alt="..." class="card-img"
+             src="/src/assets/icons/file-earmark-image.svg"
+             height="48"/>
+        <span v-show="options.showTitle" class="text-muted mx-auto text-center">Нажмите чтобы выбрать изображение</span>
+      </div>
     </div>
+    <!-- Обрезанное изображения -->
     <div class="d-flex img-result border rounded overflow-hidden flex-grow-1"
          :class="{'d-none': !img_state.complete,
          'a-1-1': crop_options.aspectRatio === 1,
@@ -66,10 +89,11 @@ function cropImg() {
          'a-16-9': crop_options.aspectRatio === 16/9}"
          @click="!img_state.show ? uploadImg() : null">
       <img alt="..." class="card-img m-auto" src="" ref="img_result"/>
-      <span class="badge bg-dark fs-6 fw-normal">Нажмите чтобы выбрать новое изображение</span>
+      <span v-show="options.showTitle" class="badge bg-dark fs-6 fw-normal">Нажмите чтобы выбрать новое изображение</span>
     </div>
     <input hidden ref="img_selector" accept="image/jpeg, image/png" type="file" class="form-control">
 
+    <!-- Модальное окно обрезки изображения -->
     <section class="modal-background" v-if="img_state.show">
       <div class="modal-window">
         <div class="modal-content">
@@ -80,18 +104,22 @@ function cropImg() {
         </div>
         <div class="hstack px-2 pb-2">
           <button class="btn btn-outline-dark" @click="img_state.show = !img_state.show">Закрыть</button>
-          <button class="btn btn-dark ms-auto" @click="cropImg">Сохранить</button>
+          <button class="btn btn-dark ms-auto" @click="cropImg">Обрезать</button>
         </div>
       </div>
     </section>
+    <!-- Кнопка загрузки готового изображения на сервер -->
+    <div v-show="img_state.complete" class="hstack mt-2">
+      <button title="Сохранить на сервер" class="btn btn-outline-dark">Сохранить</button>
+    </div>
   </section>
 </template>
 
 <style scoped>
 .img-placeholder {
   position: relative;
-  padding: 8rem;
   height: min-content;
+  min-height: 12rem;
   border: 1px dashed black;
   border-radius: 0.5rem;
 }
@@ -99,6 +127,9 @@ function cropImg() {
 .img-result {
   position: relative;
   height: min-content;
+  min-height: 12rem;
+
+  flex: 1 1 auto;
   .badge {
     position: absolute;
     margin: 0.5rem;

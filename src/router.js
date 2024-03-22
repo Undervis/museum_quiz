@@ -16,7 +16,7 @@ const routes = [
         component: ManageBoard
     },
     {
-        path: "/manage/quiz",
+        path: "/manage/quiz/:id",
         name: "EditQuiz",
         component: EditQuiz
     },

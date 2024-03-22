@@ -22,12 +22,23 @@ let quiz_data = ref({
 function newQuestion() {
   let index = quiz_data.value.questions.length
   let question = {
-    index: index,
-    title: "Вопрос №" + index,
-    description: "",
-    img: null,
-    options: [],
-    mode: 0 // 0 - One option, 1 - Many options, 2 - Img select, 3 - Puzzle
+    settings: {
+      index: index,
+      title: "Вопрос №" + index,
+      shortDescription: "",
+      addScoresPerAnswer: 1,
+      mode: 0, // 0 - One option, 1 - Many options, 2 - Img select, 3 - Puzzle
+      previewImg: null,
+      scoreMode: 0 // 0 - Only all correct, 1 - For every correct
+    },
+    answers: {
+      options: [],
+      imgOptions: [],
+      correctOption: {
+        index: 0,
+        type: 0 // 0 - One option, 1 - Img
+      }
+    }
   }
   quiz_data.value.questions.push(question)
   router.replace({query: {question: index}})
@@ -59,16 +70,17 @@ const bgImg = ref()
       <button class="btn btn-dark ms-auto">Вернуться назад</button>
     </div>
 
-    <div class="row my-4">
+    <div class="row my-4 gap-2">
       <!-- Left Panel -->
-      <div class="col-3">
+      <div class="col-12 col-lg-3 col-sm-12">
         <left-panel :questions="quiz_data.questions" @newQuestion="newQuestion"/>
       </div>
       <!-- Main Panel -->
       <div class="col">
         <general-options v-if="$router.currentRoute.value.query.general" :quiz_data="quiz_data" :bg="bgImg"/>
         <div v-if="$router.currentRoute.value.query.question && quiz_data.questions.length > 0">
-          <question :question="quiz_data.questions[$router.currentRoute.value.query.question]" @deleteQuestion="deleteQuestion"/>
+          <question :question="quiz_data.questions[$router.currentRoute.value.query.question]"
+                    @deleteQuestion="deleteQuestion"/>
         </div>
       </div>
     </div>

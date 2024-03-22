@@ -1,10 +1,23 @@
-@import "/node_modules/bootstrap/scss/bootstrap";
+@import "../bootstrap/scss/bootstrap.scss";
 @import "../fonts/Activist_webkit/Activist.css";
 @import "../fonts/BrutalType-Regular/BrutalType-Regular.css";
 
 :root {
   --white-color: #fff;
   --black-color: #000;
+}
+
+.form-control:focus,
+.form-check-input:focus
+{
+  border-color: #212529;
+  box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.25);
+  outline: 0 none;
+}
+
+.form-check-input:checked {
+  border-color: #212529;
+  background-color: #212529;
 }
 
 .cropper-bg {

@@ -22,7 +22,7 @@ const imgToUpload = ref()
     </div>
     <div class="form-floating">
       <textarea type="" style="height: 100px" placeholder="" class="form-control" v-model="quiz_data.description"></textarea>
-      <label for="description">Описание</label>
+      <label for="description">Краткое описание</label>
     </div>
     <div class="img-upload-container row">
       <div class="col">
@@ -56,7 +56,7 @@ const imgToUpload = ref()
           </div>
         </div>
         <div class="row">
-          <span class="fs-6 text-uppercase" aria-label="Запрашивать имя в начале прохождения квиза">Запрашивать имя</span>
+          <span class="fs-6 text-uppercase" title="Запрашивать имя в начале прохождения квиза">Запрашивать имя</span>
           <div class="btn-group">
             <input type="radio" class="btn-check" id="reqNameOn" name="options-reqName" autocomplete="off" checked>
             <label class="btn btn-outline-dark btn-sm" for="reqNameOn">Да</label>

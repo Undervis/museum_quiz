@@ -20,7 +20,7 @@ function isActive(index) {
       <div v-for="(q, index) in props.questions" :key="index" class="d-flex position-relative">
         <button @click="$router.replace({query: {question: index}})"
                 class="btn btn-outline-dark flex-grow-1"
-                :class="{'active': isActive(index)}">{{ q.title }}
+                :class="{'active': isActive(index)}">{{ q.settings.title }}
         </button>
       </div>
     </transition-group>
