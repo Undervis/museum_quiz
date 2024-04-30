@@ -1,17 +1,19 @@
 <script setup>
+import {ref} from "vue";
 
+const searchQuery = ref("")
 </script>
 
 <template>
   <section class="container">
     <div class="hstack gap-4 my-4">
       <span class="fs-3">КВИЗЫ</span>
-      <input type="search" class="form-control" placeholder="Поиск...">
+      <input type="search" class="form-control" v-model="searchQuery" placeholder="Поиск...">
       <div class="btn-group">
-        <button type="button" class="btn btn-outline-dark text-nowrap">Добавить квиз</button>
+        <button type="button" class="btn btn-outline-dark text-nowrap">Добавить викторину</button>
         <button type="button" class="btn btn-outline-dark text-nowrap">Сохранить</button>
       </div>
-      <router-link :to="{name:'EditQuiz'}"><button class="btn btn-dark ms-auto text-nowrap">Создать новый</button></router-link>
+      <router-link :to="{name:'EditQuiz', params: {id: 0}}"><button class="btn btn-dark ms-auto text-nowrap">Создать новый</button></router-link>
     </div>
 
     <section class="vstack gap-2 mb-4">

@@ -29,7 +29,17 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition;
+        } else {
+            return {
+                el: to.hash,
+                behavior: "smooth",
+            };
+        }
+    },
 });
 
 export default router;

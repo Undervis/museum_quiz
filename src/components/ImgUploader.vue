@@ -53,7 +53,7 @@ function uploadToServer() {
   formData.append('file', img_result.value.file)
   axios.post('/upload', formData, {
     headers: {
-      'Content-Type':'multipart/form-data'
+      'Content-Type': 'multipart/form-data'
     }
   }).then(res => {
     if (res.data.success) {
@@ -66,32 +66,37 @@ function uploadToServer() {
 </script>
 
 <template>
-  <section class="d-flex flex-wrap">
-    <!-- Плейсхолдер изображения -->
-    <div class="d-flex flex-column w-100 gap-2 img-placeholder overflow-hidden"
-         :class="{'d-none': img_state.complete,
-         'a-1-1': crop_options.aspectRatio === 1,
+  <section>
+    <div class="d-flex flex-wrap w-100 h-100"
+         :class="{'a-1-1': crop_options.aspectRatio === 1,
          'a-5-2': crop_options.aspectRatio === 5/2,
-         'a-16-9': crop_options.aspectRatio === 16/9}"
-         @click="!img_state.show ? uploadImg() : null">
-      <div class="m-auto d-flex flex-column gap-2">
-        <img alt="..." class="card-img"
-             src="/src/assets/icons/file-earmark-image.svg"
-             height="48"/>
-        <span v-show="options.showTitle" class="text-muted mx-auto text-center">Нажмите чтобы выбрать изображение</span>
+         'a-16-9': crop_options.aspectRatio === 16/9}">
+      <!-- Плейсхолдер изображения -->
+      <div class="d-inline-flex flex-column gap-2 img-placeholder overflow-hidden flex-grow-1 h-100"
+           :class="{'d-none': img_state.complete}"
+           @click="!img_state.show ? uploadImg() : null">
+        <div class="m-auto d-inline-flex flex-column gap-2">
+          <img alt="..." class="card-img"
+               src="/src/assets/icons/file-earmark-image.svg"
+               height="48"/>
+          <span v-show="options.showTitle"
+                class="text-muted mx-auto text-center">Нажмите чтобы выбрать изображение</span>
+        </div>
+      </div>
+      <!-- Обрезанное изображения -->
+      <div class="d-inline-flex img-result border rounded overflow-hidden"
+           :class="{'d-none': !img_state.complete}"
+           @click="!img_state.show ? uploadImg() : null">
+        <img alt="..." class="card-img m-auto" src="" ref="img_result"/>
+        <span v-show="options.showTitle"
+              class="badge bg-dark fs-6 fw-normal">Нажмите чтобы выбрать новое изображение</span>
+      </div>
+      <input hidden ref="img_selector" accept="image/jpeg, image/png" type="file" class="form-control">
+      <!-- Кнопка загрузки готового изображения на сервер -->
+      <div v-show="img_state.complete" class="hstack mt-2 w-100">
+        <button title="Сохранить на сервер" class="btn btn-outline-dark w-100">Сохранить</button>
       </div>
     </div>
-    <!-- Обрезанное изображения -->
-    <div class="d-flex img-result border rounded overflow-hidden flex-grow-1"
-         :class="{'d-none': !img_state.complete,
-         'a-1-1': crop_options.aspectRatio === 1,
-         'a-5-2': crop_options.aspectRatio === 5/2,
-         'a-16-9': crop_options.aspectRatio === 16/9}"
-         @click="!img_state.show ? uploadImg() : null">
-      <img alt="..." class="card-img m-auto" src="" ref="img_result"/>
-      <span v-show="options.showTitle" class="badge bg-dark fs-6 fw-normal">Нажмите чтобы выбрать новое изображение</span>
-    </div>
-    <input hidden ref="img_selector" accept="image/jpeg, image/png" type="file" class="form-control">
 
     <!-- Модальное окно обрезки изображения -->
     <section class="modal-background" v-if="img_state.show">
@@ -108,10 +113,6 @@ function uploadToServer() {
         </div>
       </div>
     </section>
-    <!-- Кнопка загрузки готового изображения на сервер -->
-    <div v-show="img_state.complete" class="hstack mt-2">
-      <button title="Сохранить на сервер" class="btn btn-outline-dark">Сохранить</button>
-    </div>
   </section>
 </template>
 
@@ -128,8 +129,14 @@ function uploadToServer() {
   position: relative;
   height: min-content;
   min-height: 12rem;
-
   flex: 1 1 auto;
+
+  > img {
+    object-fit: contain;
+    display: inline-flex;
+    flex: 1 1 auto;
+  }
+
   .badge {
     position: absolute;
     margin: 0.5rem;

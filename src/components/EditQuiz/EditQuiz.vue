@@ -8,7 +8,7 @@ import Question from "@/components/EditQuiz/Question.vue";
 let router = useRouter()
 
 let quiz_data = ref({
-  title: "Новый квиз",
+  title: "Новая викторина",
   description: "",
   to_publish: false,
   questions: [],
@@ -25,7 +25,8 @@ function newQuestion() {
     settings: {
       index: index,
       title: "Вопрос №" + index,
-      shortDescription: "",
+      visible: true,
+      text: "",
       addScoresPerAnswer: 1,
       mode: 0, // 0 - One option, 1 - Many options, 2 - Img select, 3 - Puzzle
       previewImg: null,
@@ -41,21 +42,21 @@ function newQuestion() {
     }
   }
   quiz_data.value.questions.push(question)
-  router.replace({query: {question: index}})
+  router.replace({hash: '#question-' + index})
 }
 
 function deleteQuestion(index) {
   quiz_data.value.questions.splice(index, 1)
   if (quiz_data.value.questions.length === 0) {
-    router.replace({query: {general: 0}})
-  } else if (router.currentRoute.value.query.question === index.toString()) {
-    router.replace({query: {question: index - 1}})
+    router.replace({hash: '#general'})
+  } else if (router.currentRoute.value.hash === '#question-' + index) {
+    router.replace({hash: '#question-' + (index - 1)})
   }
 }
 
 onMounted(() => {
-  if (!router.currentRoute.value.query.general && !router.currentRoute.value.query.question) {
-    router.replace({query: {general: 0}})
+  if (!router.currentRoute.value.hash) {
+    router.replace({hash: '#general'})
   }
 })
 
@@ -65,7 +66,7 @@ const bgImg = ref()
 <template>
   <img class="bg-img" ref="bgImg">
   <section class="container">
-    <div class="hstack mt-2 card card-body">
+    <div class="hstack mt-2 card card-body rounded-4">
       <span class="fs-2 font-bold">{{ quiz_data.title }}</span>
       <button class="btn btn-dark ms-auto">Вернуться назад</button>
     </div>
@@ -77,11 +78,14 @@ const bgImg = ref()
       </div>
       <!-- Main Panel -->
       <div class="col">
-        <general-options v-if="$router.currentRoute.value.query.general" :quiz_data="quiz_data" :bg="bgImg"/>
-        <div v-if="$router.currentRoute.value.query.question && quiz_data.questions.length > 0">
-          <question :question="quiz_data.questions[$router.currentRoute.value.query.question]"
-                    @deleteQuestion="deleteQuestion"/>
-        </div>
+        <section class="d-flex flex-column gap-4">
+          <general-options id="general" :quiz_data="quiz_data" :bg="bgImg"/>
+          <hr v-if="quiz_data.questions.length > 0">
+          <div v-for="q in quiz_data.questions">
+            <question :id="'question-' + q.settings.index" :question="q"
+                      @deleteQuestion="deleteQuestion(q.settings.index)"/>
+          </div>
+        </section>
       </div>
     </div>
   </section>
