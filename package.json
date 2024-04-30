@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@yeger/vue-masonry-wall": "^5.0.6",
-    "bootstrap": "^5.3.2",
+    "bootstrap": "^5.3.3",
     "vue": "^3.3.11",
     "vue-advanced-cropper": "^2.8.8",
     "vue-router": "^4.2.5"
