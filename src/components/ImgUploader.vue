@@ -2,11 +2,19 @@
 import {Cropper} from "vue-advanced-cropper";
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.bubble.css';
-import {ref} from "vue";
+import {inject, defineEmits, onMounted, ref} from "vue";
+import axios from "axios";
 
-let props = defineProps(["options", "type", "img_finish"])
+let props = defineProps(["options", "type", "img_finish", "context", "img_url"])
+const api_url = inject('api_url')
+const emit = defineEmits(['uploaded'])
 
-const img_state = ref({file: "", show: false, complete: false})
+const img_state = ref({
+  file: "", showModal: false,
+  complete: false, uploaded: false,
+  loadedFromServer: false, uploadedToServer: false
+})
+
 let img_selector = ref()
 let img_cropper = ref()
 let img_result = ref()
@@ -14,6 +22,7 @@ let defaultOptions = {
   checkOrientation: true,
   aspectRatio: 16 / 9
 }
+
 let crop_options = ref({})
 if (!props.options) {
   crop_options.value = defaultOptions
@@ -21,14 +30,26 @@ if (!props.options) {
   crop_options.value = props.options
 }
 
+onMounted(() => {
+  if (props.img_url && !img_state.value.loadedFromServer) {
+    img_result.value.src = api_url + '/get_img/' + props.img_url
+    img_state.value.complete = true
+    if (props.img_finish) {
+      props.img_finish.src = api_url + '/get_img/' + props.img_url
+    }
+    img_state.value.loadedFromServer = true
+  }
+})
+
+
 function uploadImg() {
   img_selector.value.click();
   img_selector.value.onchange = function () {
     let reader = new FileReader();
     reader.readAsDataURL(img_selector.value.files[0]);
     reader.onload = function (e) {
-      img_state.value.show = true
-      img_state.value.file = e.target.result
+      img_state.value.showModal = true
+      img_selector.value.file = e.target.result
     }
   }
 }
@@ -40,9 +61,11 @@ function cropImg() {
       props.img_finish.src = URL.createObjectURL(blob)
     }
     img_result.value.src = URL.createObjectURL(blob)
+    img_result.value.file = blob
     img_result.value.onload = function () {
-      img_state.value.show = false
+      img_state.value.showModal = false
       img_state.value.complete = true
+      img_state.value.uploaded = true
     }
   })
 }
@@ -50,19 +73,28 @@ function cropImg() {
 // Загрузка изображения на сервер
 function uploadToServer() {
   let formData = new FormData()
-  formData.append('file', img_result.value.file)
-  axios.post('/upload', formData, {
+  let img_file = new File([img_result.value.file], "image.jpg", {type: "image/jpeg"})
+  formData.append('image', img_file)
+  formData.append('context', props.context.title)
+  if (props.context.title === "option-img") {
+    formData.append('question_index', props.context.questionIndex)
+    formData.append('option_index', props.context.optionIndex)
+  }
+  axios.post(api_url + '/upload_img/' + props.context.quiz_id, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
-  }).then(res => {
-    if (res.data.success) {
-      img_state.value.show = false
-      img_state.value.complete = true
-      img_result.value.src = res.data.url
-    }
+  }).then((res) => {
+    console.log(res)
+    img_state.value.loadedFromServer = false
+    img_state.value.uploadedToServer = true
+    emit('uploaded', res.data.file_name)
+    img_result.value.src = api_url + '/get_img/' + res.data.file_name
+  }).catch((error) => {
+    console.log(error)
   })
 }
+
 </script>
 
 <template>
@@ -73,43 +105,51 @@ function uploadToServer() {
          'a-16-9': crop_options.aspectRatio === 16/9}">
       <!-- Плейсхолдер изображения -->
       <div class="d-inline-flex flex-column gap-2 img-placeholder overflow-hidden flex-grow-1 h-100"
-           :class="{'d-none': img_state.complete}"
-           @click="!img_state.show ? uploadImg() : null">
+           :class="{'d-none': img_state.complete}" style="cursor:pointer"
+           title="Нажмите, чтобы выбрать изображение"
+           @click="!img_state.showModal ? uploadImg() : null">
         <div class="m-auto d-inline-flex flex-column gap-2">
           <img alt="..." class="card-img"
                src="/src/assets/icons/file-earmark-image.svg"
                height="48"/>
-          <span v-show="options.showTitle"
-                class="text-muted mx-auto text-center">Нажмите чтобы выбрать изображение</span>
         </div>
       </div>
       <!-- Обрезанное изображения -->
       <div class="d-inline-flex img-result border rounded overflow-hidden"
-           :class="{'d-none': !img_state.complete}"
-           @click="!img_state.show ? uploadImg() : null">
+           :class="{'d-none': !img_state.complete}" style="cursor:pointer"
+           title="Нажмите, чтобы выбрать изображение"
+           @click="!img_state.showModal ? uploadImg() : null">
         <img alt="..." class="card-img m-auto" src="" ref="img_result"/>
-        <span v-show="options.showTitle"
-              class="badge bg-dark fs-6 fw-normal">Нажмите чтобы выбрать новое изображение</span>
       </div>
       <input hidden ref="img_selector" accept="image/jpeg, image/png" type="file" class="form-control">
       <!-- Кнопка загрузки готового изображения на сервер -->
-      <div v-show="img_state.complete" class="hstack mt-2 w-100">
-        <button title="Сохранить на сервер" class="btn btn-outline-dark w-100">Сохранить</button>
+      <div v-if="img_state.uploaded" class="d-flex gap-2 flex-column mt-2 w-100">
+        <div v-if="!img_state.uploadedToServer" class="bg-warning rounded text-center p-1">
+          <span class="text-dark">Изображение не сохранено на сервер!</span>
+        </div>
+        <div v-if="img_state.uploadedToServer" class="bg-success rounded text-center p-1">
+          <span class="text-white">Сохранено</span>
+        </div>
+        <button title="Сохранить на сервер" @click.prevent="uploadToServer"
+                v-if="!img_state.uploadedToServer"
+                class="btn btn-outline-dark w-100">Сохранить
+        </button>
       </div>
     </div>
 
     <!-- Модальное окно обрезки изображения -->
-    <section class="modal-background" v-if="img_state.show">
+    <section class="modal-background" v-if="img_state.showModal">
       <div class="modal-window">
         <div class="modal-content">
           <progress class="w-50 position-absolute" style="filter: saturate(0); z-index: 1"/>
           <cropper class="q-img-crop overflow-x-scroll cropper rounded" ref="img_cropper" style="z-index: 10"
-                   :src="img_state.file" checkOrientation
+                   :src="img_selector.file" checkOrientation
                    :stencil-props="{aspectRatio: crop_options.aspectRatio}"/>
         </div>
         <div class="hstack px-2 pb-2">
-          <button class="btn btn-outline-dark" @click="img_state.show = !img_state.show">Закрыть</button>
-          <button class="btn btn-dark ms-auto" @click="cropImg">Обрезать</button>
+          <button class="btn btn-outline-dark" @click.prevent="img_state.showModal = !img_state.showModal">Закрыть
+          </button>
+          <button class="btn btn-dark ms-auto" @click.prevent="cropImg">Обрезать</button>
         </div>
       </div>
     </section>
@@ -130,6 +170,7 @@ function uploadToServer() {
   height: min-content;
   min-height: 12rem;
   flex: 1 1 auto;
+  transition: 0.2s ease;
 
   > img {
     object-fit: contain;
@@ -141,6 +182,11 @@ function uploadToServer() {
     position: absolute;
     margin: 0.5rem;
   }
+}
+
+.img-result:hover {
+  cursor: pointer;
+  filter: brightness(80%);
 }
 
 .a-1-1 {
@@ -169,37 +215,5 @@ function uploadToServer() {
   min-width: min-content;
 }
 
-.modal-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  z-index: 100;
-  align-items: center;
-}
 
-.modal-window {
-  background-color: white;
-  max-width: 70rem;
-  border-radius: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  justify-content: center;
-  align-items: center;
-  max-height: 50rem;
-}
 </style>

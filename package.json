@@ -9,11 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@yeger/vue-masonry-wall": "^5.0.6",
+    "@vueup/vue-quill": "^1.2.0",
+    "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "headbreaker": "^3.0.0",
+    "jquery": "^3.7.1",
+    "konva": "^9.3.6",
+    "lodash.debounce": "^4.0.8",
     "vue": "^3.3.11",
     "vue-advanced-cropper": "^2.8.8",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",
