@@ -98,8 +98,8 @@ onMounted(() => {
   <loader-bars v-if="is_loading"/>
   <div v-show="data.blur_bg" class="bg-blur"></div>
   <img v-if="data.img_bg" class="bg-img" :src="`${api_url}/get_img/${data.img_bg}`">
-  <main v-if="data.quiz_id" class="container d-flex" style="height: 100vh">
-    <section class="m-auto col">
+  <main v-if="data.quiz_id" class="overflow-hidden d-flex" style="height: 100vh">
+    <section class="container m-auto col">
       <div class="hstack mb-2">
         <button v-if="current_question !== data.questions.length" @click="returnHome"
                 class="btn btn-light d-flex border-0 justify-content-center gap-2 align-items-center ms-auto rounded-4">

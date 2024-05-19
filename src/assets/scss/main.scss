@@ -59,7 +59,12 @@
   transition: all 0.5s ease;
 }
 
-.fade-left-enter-from,
+.fade-left-enter-from {
+  position: absolute;
+  transform: translateX(100%);
+  opacity: 0;
+}
+
 .fade-left-leave-to {
   position: absolute;
   transform: translateX(-100%);
