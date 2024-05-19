@@ -102,7 +102,7 @@ onMounted(() => {
     <section class="m-auto col">
       <div class="hstack mb-2">
         <button v-if="current_question !== data.questions.length" @click="returnHome"
-            class="btn btn-light d-flex border-0 justify-content-center gap-2 align-items-center ms-auto rounded-4">
+                class="btn btn-light d-flex border-0 justify-content-center gap-2 align-items-center ms-auto rounded-4">
           <span>Вернуться на главную</span>
           <img style="filter: invert(0)" src="/src/assets/icons/house.svg"/>
         </button>
@@ -114,7 +114,7 @@ onMounted(() => {
             <img v-if="data.img_preview" class="img-fluid" :src="`${api_url}/get_img/${data.img_preview}`"/>
             <img v-else class="img-fluid" src="/src/assets/icons/no-image.svg"/>
           </div>
-          <div class="col" >
+          <div class="col">
             <div class="card-body p-4 pb-0">
               <h2 class="card-title text-center">{{ data.title }}</h2>
               <div class="description overflow-y-scroll" style="max-height: 21rem" v-html="data.description"></div>
@@ -138,14 +138,13 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <transition-group name="slide">
-        <section v-for="(q, index) in data.questions" :key="index">
+      <section v-for="(q, index) in data.questions" :key="index">
+        <transition name="fade-left">
           <div v-if="current_question === index" class="card rounded-4">
             <div class="card-body p-5">
               <h2 class="card-title text-center">{{ q.settings.title }}</h2>
               <div class="description" v-html="q.settings.text"></div>
               <hr>
-
               <div v-if="q.settings.mode === 0" class="d-flex flex-column gap-2">
                 <div v-for="(a, i) in q.answers.options" :key="i">
                   <div :class="{'active' : answers.options[index].answer === i}" class="card card-body option fs-5"
@@ -213,8 +212,9 @@ onMounted(() => {
               </div>
             </div>
           </div>
-        </section>
-      </transition-group>
+        </transition>
+
+      </section>
       <div v-if="current_question === data.questions.length" class="card rounded-4">
         <div class="card-body p-5">
           <h2 class="card-title text-center">Спасибо за прохождение викторины, {{ answers.user_name }}!</h2>

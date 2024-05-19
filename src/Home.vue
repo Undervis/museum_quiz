@@ -7,7 +7,6 @@ import {useRouter} from "vue-router";
 import LoaderBars from "@/components/loaderBars.vue";
 import $ from 'jquery'
 import Start_button from "@/components/start_button.vue";
-import AnimatedBackground from "@/components/AnimatedBackground.vue";
 
 const toast = useToast()
 const router = useRouter()
@@ -52,12 +51,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <animated-background/>
   <loader-bars v-if="state.loading"/>
   <main class="container">
-
     <div class="hstack gap-3 my-4">
-      <span class="fs-3">ВИКТОРИНЫ</span>
+      <img height="46" src="/src/assets/logo.svg"/>
       <input type="search" class="form-control rounded-pill" v-model="searchQuery" placeholder="Поиск...">
       <div class="btn-group">
         <button type="button" class="btn rounded-start-pill btn-outline-dark text-nowrap">
@@ -72,6 +69,7 @@ onMounted(() => {
     </div>
 
     <section v-if="data.length > 0">
+      <span class="fs-3">ВИКТОРИНЫ</span>
       <div class="d-flex flex-wrap gap-4 mb-4">
         <div v-for="item in data" :key="item.quiz_id" class="col"
              style="flex-basis: 20rem; max-width: 40rem; aspect-ratio: 1">
@@ -99,7 +97,7 @@ onMounted(() => {
                 </div>
               </section>
               <div @click="$router.push({name: 'Quiz', params: {id: item.quiz_id}})"
-                      class="position-absolute border-2 top-50 start-50 button-go translate-middle">
+                   class="position-absolute border-2 top-50 start-50 button-go translate-middle">
                 <start_button/>
               </div>
               <section class="position-absolute bottom-0 start-0 w-100">
@@ -123,7 +121,7 @@ onMounted(() => {
                 </div>
               </section>
               <img v-if="item.img_preview" :src="`${api_url}/get_img/${item.img_preview}`" class="card-img-top">
-              <img v-else class="img-fluid" src="/src/assets/icons/no-image.svg"/>
+              <img v-else class="card-img-top" src="/src/assets/icons/no-image.svg"/>
             </div>
           </div>
         </div>
@@ -133,18 +131,33 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.col > .card {
-  outline: 2px solid transparent;
-  transition: 0.2s ease;
-}
-
 .button-go {
   opacity: 0;
   transition: 0.2s ease;
 }
 
+.col > .card {
+  .card-img-top {
+    transform: scale(1);
+    z-index: 0;
+    transition: 0.2s ease;
+  }
+
+  * {
+    z-index: 1;
+  }
+}
+
 .col > .card:hover {
-  outline: 2px solid var(--bs-dark);
+  .card-img-top {
+    filter: blur(3px);
+    transform: scale(1.1);
+    z-index: 0;
+  }
+
+  * {
+    z-index: 1;
+  }
 
   .button-go {
     opacity: 100;
@@ -159,4 +172,5 @@ onMounted(() => {
 .rotate-180.toggle-icon {
   transform: rotate(180deg);
 }
+
 </style>

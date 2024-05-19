@@ -56,11 +56,13 @@
 
 .fade-left-enter-active,
 .fade-left-leave-active {
-  transition: 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 .fade-left-enter-from,
 .fade-left-leave-to {
+  position: absolute;
+  transform: translateX(-100%);
   opacity: 0;
 }
 
