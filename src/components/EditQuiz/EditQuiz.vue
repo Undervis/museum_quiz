@@ -34,6 +34,7 @@ let quiz_data = ref({
   questions: [],
   last_question_index: 0,
   img_preview: null,
+  theme: 'classic',
   img_bg: null,
   blur_bg: true,
   quiz_view: 0, // 0 - Both, 1 - Magnezius, 2 - Museum

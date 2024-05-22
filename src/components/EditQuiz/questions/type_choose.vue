@@ -23,18 +23,18 @@ function setCorrectAnswer(index, type) {
 <template>
   <div class="d-flex flex-row justify-content-center" v-for="(op, index) in question.answers.options">
     <input v-if="question.settings.mode === 0" :name="'quiz' + question.settings.index + '-option'"
-           type="radio" class="mx-2" :checked="'checked' ? question.answers.correctOption.index === index : null"
+           type="radio" class="mx-2 rounded-pill" :checked="'checked' ? question.answers.correctOption.index === index : null"
            @click="setCorrectAnswer(index, 0)">
     <input v-else-if="question.settings.mode === 1" type="checkbox" class="mx-2" v-model="op.isCorrect">
     <div class="w-100">
-      <input class="form-control" required placeholder="Вариант ответа" maxlength="64" v-model="op.text">
+      <input class="form-control rounded-pill" required placeholder="Вариант ответа" maxlength="64" v-model="op.text">
     </div>
-    <button class="btn btn-sm btn-danger border-0 ms-2" @click="delOption(op)">
+    <button style="aspect-ratio: 1" class="btn btn-sm btn-danger rounded-circle border-0 ms-2" @click="delOption(op)">
       <img src="/src/assets/icons/x-circle-fill.svg" height="20"/>
     </button>
   </div>
   <!-- Добавление варианта ответа -->
-  <button class="btn btn-outline-dark" @click="addOption">
+  <button class="btn rounded-pill btn-outline-dark" @click="addOption">
     <img height="20" src="/src/assets/icons/plus-lg.svg">
   </button>
 </template>

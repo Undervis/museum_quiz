@@ -7,6 +7,7 @@ import {useRouter} from "vue-router";
 import LoaderBars from "@/components/loaderBars.vue";
 import $ from 'jquery'
 import Start_button from "@/components/start_button.vue";
+import HeaderSearch from "@/components/headerSearch.vue";
 
 const toast = useToast()
 const router = useRouter()
@@ -55,21 +56,10 @@ onMounted(() => {
   <main class="container">
     <div class="hstack gap-3 my-4">
       <img height="46" src="/src/assets/logo.svg"/>
-      <input type="search" class="form-control rounded-pill" v-model="searchQuery" placeholder="Поиск...">
-      <div class="btn-group">
-        <button type="button" class="btn rounded-start-pill btn-outline-dark text-nowrap">
-          <span>Фильтры</span>
-          <img class="ms-2" src="/src/assets/icons/funnel.svg">
-        </button>
-        <button type="button" class="btn rounded-end-pill btn-outline-dark text-nowrap">
-          <span>Сортировка</span>
-          <img class="ms-2" src="/src/assets/icons/sort-alpha-down.svg">
-        </button>
-      </div>
+      <header-search :data="data" context="main"/>
     </div>
 
     <section v-if="data.length > 0">
-      <span class="fs-3">ВИКТОРИНЫ</span>
       <div class="d-flex flex-wrap gap-4 mb-4">
         <div v-for="item in data" :key="item.quiz_id" class="col"
              style="flex-basis: 20rem; max-width: 40rem; aspect-ratio: 1">

@@ -59,60 +59,59 @@ function uploadImgToServer() {
 </script>
 
 <template>
-  <hr>
   <div class="hstack gap-2">
-    <input type="file" accept="image/*" ref="img_field" class="form-control" @change="uploadImgPuzzle">
+    <input type="file" accept="image/*" ref="img_field" class="form-control rounded-pill" @change="uploadImgPuzzle">
     <button :class="{'disabled': !temp_img || saveStatus }"
-            class="btn btn-outline-dark text-nowrap" @click="uploadImgToServer">
+            class="btn rounded-pill btn-outline-dark text-nowrap" @click="uploadImgToServer">
       <span v-if="!saveStatus">Сохранить на сервер</span>
       <span v-else class="spinner-border spinner-border-sm"></span>
     </button>
   </div>
 
-  <span v-if="!temp_img && !question.answers.puzzle.img" class="alert alert-info p-2 text-center">
+  <span v-if="!temp_img && !question.answers.puzzle.img" class="alert mb-2 rounded-4 alert-info p-2 text-center">
     Изображение отсутствует
   </span>
-  <span v-else-if="temp_img" class="alert alert-warning p-2 text-center">
+  <span v-else-if="temp_img" class="alert mb-2 rounded-4 alert-warning p-2 text-center">
     Сохраните загруженное изображение!
   </span>
-  <span v-else-if="question.answers.puzzle.img" class="alert alert-success p-2 text-center">
+  <span v-else-if="question.answers.puzzle.img" class="alert mb-2 rounded-4 alert-success p-2 text-center">
     Изображение сохранено
   </span>
 
   <section class="d-flex flex-column gap-2" v-if="question.answers.puzzle.img || temp_img">
-    <hr class="mt-0">
+    <hr class="mt-0 mb-2 w-75 mx-auto">
     <div class="hstack gap-2">
       <div class="input-group w-75" title="Кол-во разделений по вертикали">
-        <span class="input-group-text">Столбцы</span>
-        <input class="form-control" min="1" max="10" type="number" v-model="question.answers.puzzle.cols">
+        <span class="input-group-text rounded-start-pill">Столбцы</span>
+        <input class="form-control rounded-end-pill" min="1" max="10" type="number" v-model="question.answers.puzzle.cols">
       </div>
       <div class="input-group w-75" title="Кол-во разделений по горизонтали">
-        <span class="input-group-text">Строки</span>
-        <input class="form-control" min="1" max="10" type="number" v-model="question.answers.puzzle.rows">
+        <span class="input-group-text rounded-start-pill">Строки</span>
+        <input class="form-control rounded-end-pill" min="1" max="10" type="number" v-model="question.answers.puzzle.rows">
       </div>
-      <button class="btn btn-outline-dark" :class="{'active' : puzzle_shuffle}"
+      <button class="btn rounded-pill btn-outline-dark" :class="{'active' : puzzle_shuffle}"
               title="Так будет выглядеть пазл при решении викторины"
               @click="puzzle_shuffle = !puzzle_shuffle">Предпросмотр
       </button>
     </div>
     <div class="hstack gap-2">
       <div class="input-group w-75" title="Толщина линий вокруг элементов пазла">
-        <span class="input-group-text">Толщина линий</span>
-        <input class="form-control" min="0" max="20" type="number"
+        <span class="input-group-text rounded-start-pill">Толщина линий</span>
+        <input class="form-control rounded-end-pill" min="0" max="20" type="number"
                v-model="question.answers.puzzle.strokeWidth">
       </div>
       <div class="input-group" title="Сглаживание линий вокруг элементов пазла">
-        <span class="input-group-text">Сглаживание линий</span>
-        <input class="form-control" step="0.05" min="0" max="0.5" type="number"
+        <span class="input-group-text rounded-start-pill">Сглаживание линий</span>
+        <input class="form-control rounded-end-pill" step="0.05" min="0" max="0.5" type="number"
                v-model="question.answers.puzzle.strokeSoftness">
       </div>
       <div class="input-group w-75" title="Цвет линий вокруг элементов пазла">
-        <span class="input-group-text d-flex">Цвет линий</span>
-        <input class="form-control h-auto" type="color"
+        <span class="input-group-text rounded-start-pill d-flex">Цвет линий</span>
+        <input class="form-control rounded-end-pill h-auto" type="color"
                v-model="question.answers.puzzle.strokeColor">
       </div>
     </div>
-    <div class="d-flex card flex-grow-1 overflow-hidden">
+    <div class="d-flex card rounded-4 flex-grow-1 overflow-hidden">
       <puzzle
           :img_url="temp_img ? temp_img : `${api_url}/get_img/${question.answers.puzzle.img}`"
           :cols="question.answers.puzzle.cols" :rows="question.answers.puzzle.rows"

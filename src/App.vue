@@ -10,10 +10,31 @@ function allowFullscreen() {
 
 <template>
   <button @click="allowFullscreen"
-          class="btn btn-lg m-4 btn-light rounded-circle position-fixed bottom-0" style="aspect-ratio: 1">
+          class="btn btn-lg m-4 btn-light rounded-circle position-fixed bottom-0"
+          style="aspect-ratio: 1; z-index: 1500">
     <img src="/src/assets/icons/fullscreen.svg">
   </button>
   <router-view/>
+  <div hidden>
+    <svg viewBox="0 0 200 200" xmlns='http://www.w3.org/2000/svg'>
+      <filter id='noiseFilter'>
+        <feTurbulence
+            result="turbulence"
+            type='fractalNoise'
+            baseFrequency='0.65'
+            numOctaves='3'
+            stitchTiles='stitch'/>
+        <feDisplacementMap
+            in="SourceGraphic"
+            in2="turbulence"
+            scale="10"
+            xChannelSelector="R"
+            yChannelSelector="G"
+            />
+      </filter>
+    </svg>
+  </div>
+
 </template>
 
 <style scoped>

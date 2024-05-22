@@ -18,7 +18,7 @@ defineProps(['question', 'quiz_data', 'state'])
           <input class="form-check-input" :id="'q'+question.settings.index + 'to_publish'"
                  v-model="question.settings.visible" type="checkbox">
         </div>
-        <button class="btn btn-sm btn-danger ms-auto d-flex justify-content-center border-0 py-2 gap-2"
+        <button class="btn rounded-pill btn-sm btn-danger ms-auto d-flex justify-content-center border-0 py-2 gap-2"
                 @click="$emit('deleteQuestion')">
           <img src="/src/assets/icons/x-circle-fill.svg" height="20"/>
           <span>Удалить</span>
@@ -26,27 +26,22 @@ defineProps(['question', 'quiz_data', 'state'])
       </div>
 
       <div class="form-floating w-100">
-        <input required class="form-control"
+        <input required class="form-control rounded-4"
                placeholder="" id="questionTitle" v-model="question.settings.title">
         <label for="questionTitle">Название вопроса</label>
       </div>
-      <div class="card">
-        <quill-editor v-model:content="question.settings.text" toolbar="full" content-type="html"
+      <div class="card rounded-4">
+        <quill-editor v-model:content="question.settings.text" toolbar="essential" content-type="html"
                       placeholder="Текст вопроса" theme="snow"></quill-editor>
       </div>
-      <div v-if="false" hidden="hidden" class="form-floating">
-        <textarea class="form-control" placeholder="" id="questionDescription" style="height: 100px"
-                  v-model="question.settings.text"></textarea>
-        <label for="questionDescription">Текст вопроса</label>
-      </div>
-      <hr>
+      <hr class="w-75 my-2 mx-auto">
       <!-- Режим вопроса -->
       <div class="btn-group">
         <input type="radio" class="btn-check" @click="question.settings.mode=0"
                :id="'q' + question.settings.index + 'typeOneOption'"
                :name="'options-q' + question.settings.index + '-type'"
                autocomplete="off" checked>
-        <label class="btn btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typeOneOption'">Один вариант
+        <label class="btn rounded-start-pill btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typeOneOption'">Один вариант
           ответа</label>
         <input type="radio" class="btn-check" @click="question.settings.mode=1"
                :id="'q' + question.settings.index + 'typeManyOptions'"
@@ -64,13 +59,13 @@ defineProps(['question', 'quiz_data', 'state'])
                :id="'q' + question.settings.index + 'typePuzzle'"
                :name="'options-q' + question.settings.index + '-type'"
                autocomplete="off" :checked="'checked' ? question.settings.mode === 3 : null">
-        <label class="btn btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typePuzzle'">Пазл</label>
+        <label class="btn rounded-end-pill btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typePuzzle'">Пазл</label>
       </div>
       <!-- Баллы -->
       <div class="d-flex flex-column gap-2">
         <div>
           <div class="form-floating">
-            <input type="number" class="form-control" placeholder="" :id="'q' + question.settings.index + 'addScores'"
+            <input type="number" class="form-control rounded-4" placeholder="" :id="'q' + question.settings.index + 'addScores'"
                    v-model="question.settings.addScoresPerAnswer" min="1" value="1">
             <label :for="'q' + question.settings.index + 'addScores'">Кол-во баллов за правильный ответ</label>
           </div>
@@ -83,14 +78,14 @@ defineProps(['question', 'quiz_data', 'state'])
                    :name="'q' + question.settings.index + '-typeScore'"
                    :checked="'checked' ? question.settings.scoreMode === 0 : null"
                    autocomplete="off">
-            <label class="btn btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typeForAllScore'">
+            <label class="btn rounded-start-pill btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typeForAllScore'">
               Только за все правильные ответы</label>
             <input type="radio" class="btn-check" @click="question.settings.scoreMode=1"
                    :id="'q' + question.settings.index + 'typeForEveryScore'"
                    :name="'q' + question.settings.index + '-typeScore'"
                    :checked="'checked' ? question.settings.scoreMode === 1 : null"
                    autocomplete="off">
-            <label class="btn btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typeForEveryScore'">За
+            <label class="btn rounded-end-pill btn-sm btn-outline-dark" :for="'q' + question.settings.index + 'typeForEveryScore'">За
               каждый ответ по отдельности</label>
           </div>
         </div>

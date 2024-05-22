@@ -115,7 +115,7 @@ function uploadToServer() {
         </div>
       </div>
       <!-- Обрезанное изображения -->
-      <div class="d-inline-flex img-result border rounded overflow-hidden"
+      <div class="d-inline-flex img-result border rounded-4 overflow-hidden"
            :class="{'d-none': !img_state.complete}" style="cursor:pointer"
            title="Нажмите, чтобы выбрать изображение"
            @click="!img_state.showModal ? uploadImg() : null">
@@ -162,7 +162,7 @@ function uploadToServer() {
   height: min-content;
   min-height: 12rem;
   border: 1px dashed black;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
 }
 
 .img-result {
@@ -207,7 +207,7 @@ function uploadToServer() {
 }
 
 .q-img-crop {
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   height: auto;
   max-height: 45rem;
   width: auto;

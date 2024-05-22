@@ -17,12 +17,12 @@ const imgToUpload = ref()
         <input class="form-check-input" id="to_publish" v-model="quiz_data.to_publish" type="checkbox">
       </div>
     </div>
-    <div class="form-floating">
-      <input type="text" required placeholder="" class="form-control text-truncate" v-model="quiz_data.title"
+    <div class="form-floating ">
+      <input type="text" required placeholder="" class="form-control rounded-4" v-model="quiz_data.title"
              maxlength="48">
       <label for="title">Название (Макс. 48 символов)</label>
     </div>
-    <div class="card">
+    <div class="card rounded-4">
       <quill-editor v-model:content="quiz_data.description" toolbar="essential" content-type="html"
                     placeholder="Описание викторины" theme="snow"></quill-editor>
     </div>
@@ -59,11 +59,11 @@ const imgToUpload = ref()
             <input type="radio" @click="quiz_data.quiz_type = 0"
                    :checked="'checked' ? quiz_data.quiz_type === 0 : null"
                    class="btn-check" id="typeChildren" name="settings-type" autocomplete="off">
-            <label class="btn btn-outline-dark btn-sm" for="typeChildren">Детский</label>
+            <label class="btn rounded-start-pill btn-outline-dark btn-sm" for="typeChildren">Детский</label>
             <input type="radio" @click="quiz_data.quiz_type = 1"
                    :checked="'checked' ? quiz_data.quiz_type === 1 : null"
                    class="btn-check" id="typeAdult" name="settings-type" autocomplete="off">
-            <label class="btn btn-outline-dark btn-sm" for="typeAdult">Взрослый</label>
+            <label class="btn rounded-end-pill btn-outline-dark btn-sm" for="typeAdult">Взрослый</label>
           </div>
         </div>
         <div class="row d-inline-flex">
@@ -73,11 +73,24 @@ const imgToUpload = ref()
             <input type="radio" @click="quiz_data.requiredName = true"
                    :checked="'checked' ? quiz_data.requiredName : null"
                    class="btn-check" id="reqNameOn" name="settings-reqName" autocomplete="off" checked>
-            <label class="btn btn-outline-dark btn-sm" for="reqNameOn">Да</label>
+            <label class="btn rounded-start-pill btn-outline-dark btn-sm" for="reqNameOn">Да</label>
             <input type="radio" @click="quiz_data.requiredName = false"
                    :checked="'checked' ? !quiz_data.requiredName : null"
                    class="btn-check" id="reqNameOff" name="settings-reqName" autocomplete="off">
-            <label class="btn btn-outline-dark btn-sm" for="reqNameOff">Нет</label>
+            <label class="btn rounded-end-pill btn-outline-dark btn-sm" for="reqNameOff">Нет</label>
+          </div>
+        </div>
+        <div class="row d-inline-flex">
+          <span class="fs-6 text-uppercase">Тема</span>
+          <div class="btn-group">
+            <input type="radio" @click="quiz_data.theme = 'classic'"
+                   :checked="'checked' ? quiz_data.theme === 'classic' : null"
+                   class="btn-check" id="themeClassic" name="settings-theme" autocomplete="off">
+            <label class="btn rounded-start-pill btn-outline-dark btn-sm" for="themeClassic">Классическая</label>
+            <input type="radio" @click="quiz_data.theme = 'modern'"
+                   :checked="'checked' ? quiz_data.theme === 'modern' : null"
+                   class="btn-check" id="themeModern" name="settings-theme" autocomplete="off">
+            <label class="btn rounded-end-pill btn-outline-dark btn-sm" for="themeModern">Современная</label>
           </div>
         </div>
         <div class="row">

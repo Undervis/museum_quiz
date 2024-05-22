@@ -6,6 +6,8 @@ import Toast_container from "@/components/toast_container.vue";
 import {useToast} from "vue-toastification";
 import LoaderBars from "@/components/loaderBars.vue";
 import {useRouter} from "vue-router";
+import ConfirmModal from "@/components/confirmModal.vue";
+import HeaderSearch from "@/components/headerSearch.vue";
 
 const toast = useToast()
 const router = useRouter()
@@ -13,7 +15,13 @@ const router = useRouter()
 const searchQuery = ref("")
 const api_url = inject('api_url')
 const data = ref({})
+const filteredData = ref({})
 const showDescription = ref({
+  show: false,
+  id: -1
+})
+
+const confirmModal = ref({
   show: false,
   id: -1
 })
@@ -23,27 +31,27 @@ const state = ref({
 })
 
 function deleteQuiz(quiz_id) {
-  if (confirm("Действительно удалить запись?")) {
-    state.value.loading = true
-    axios.delete(`${api_url}/delete_quiz/${quiz_id}`)
-        .then(() => {
-          axios.get(`${api_url}/get_quizes/`)
-              .then((response) => {
-                data.value = response.data
-                data.value.showDescription = false
-                state.value.loading = false
-              })
-              .catch((error) => {
-                console.error(error)
-                state.value.loading = false
-              })
-        })
-        .catch((error) => {
-          console.error(error)
-          state.value.loading = false
-        })
-  }
-
+  state.value.loading = true
+  axios.delete(`${api_url}/delete_quiz/${quiz_id}`)
+      .then(() => {
+        axios.get(`${api_url}/get_quizes/`)
+            .then((response) => {
+              data.value = response.data
+              filteredData.value = data.value
+              data.value.showDescription = false
+              confirmModal.show = false
+              confirmModal.id = -1
+              state.value.loading = false
+            })
+            .catch((error) => {
+              console.error(error)
+              state.value.loading = false
+            })
+      })
+      .catch((error) => {
+        console.error(error)
+        state.value.loading = false
+      })
 }
 
 function convertDate(date) {
@@ -56,6 +64,7 @@ onMounted(() => {
   axios.get(`${api_url}/get_quizes/`)
       .then((response) => {
         data.value = response.data
+        filteredData.value = data.value
         data.value.showDescription = false
         state.value.loading = false
       })
@@ -70,33 +79,27 @@ onMounted(() => {
         }
         toast.error(toast_content, {timeout: 10000, closeButton: false})
         setTimeout(() => {
-            router.go()
-          }, 10000)
+          router.go()
+        }, 10000)
       })
 })
 </script>
 
 <template>
   <loader-bars v-if="state.loading"/>
+  <confirm-modal v-if="confirmModal.show" title="Действительно удалить запись?"
+                 msg="Это действие невозможно отменить!"
+                 @confirm="deleteQuiz(confirmModal.id)" @dismiss="confirmModal.show = false"
+  />
+
   <section class="container">
-    <div class="hstack gap-3 my-4">
+    <div class="hstack gap-3 py-4">
       <button @click="$router.push('/')"
-            class="btn btn-outline-dark d-flex text-nowrap justify-content-center gap-2 align-items-center ms-auto rounded-pill">
-          <span>На главную</span>
-          <img src="/src/assets/icons/house.svg"/>
-        </button>
-      <span class="fs-3">ВИКТОРИНЫ</span>
-      <input type="search" class="form-control rounded-pill" v-model="searchQuery" placeholder="Поиск...">
-      <div class="btn-group">
-        <button type="button" class="btn rounded-start-pill btn-outline-dark text-nowrap">
-          <span>Фильтры</span>
-          <img class="ms-2" src="/src/assets/icons/funnel.svg">
-        </button>
-        <button type="button" class="btn rounded-end-pill btn-outline-dark text-nowrap">
-          <span>Сортировка</span>
-          <img class="ms-2" src="/src/assets/icons/sort-alpha-down.svg">
-        </button>
-      </div>
+              class="btn btn-outline-dark d-flex text-nowrap justify-content-center gap-2 align-items-center ms-auto rounded-pill">
+        <span>На главную</span>
+        <img src="/src/assets/icons/house.svg"/>
+      </button>
+      <header-search :data="data" context="manage" @filtered="data => filteredData = data"/>
       <router-link :to="{name:'EditQuiz', params: {id: 0}}">
         <button class="btn btn-dark rounded-pill ms-auto text-nowrap">
           <span>Создать новую</span>
@@ -107,7 +110,7 @@ onMounted(() => {
 
     <section class="vstack gap-2 mb-4">
       <div v-if="data.length === 0" class="alert rounded-4 alert-info">Викторин нет, самое время создать новую!</div>
-      <div v-for="quiz in data" class="card rounded-4 overflow-hidden">
+      <div v-for="quiz in filteredData" class="card rounded-4 overflow-hidden">
         <div class="row g-0">
           <div class="col-2 border-end">
             <img v-if="quiz.img_preview" class="img-fluid" :src="`${api_url}/get_img/${quiz.img_preview}`"/>
@@ -122,7 +125,8 @@ onMounted(() => {
                   <span v-else class="badge rounded-pill fw-normal bg-secondary">Не опубликована</span>
                   <div class="vr h-75 my-auto"/>
                   <span class="text-muted" title="Дата создания"><b>ДС:</b> {{ convertDate(quiz.first_save) }}</span>
-                  <span class="text-muted" title="Дата последнего изменения"><b>ДПИ:</b> {{ convertDate(quiz.last_save) }}</span>
+                  <span class="text-muted" title="Дата последнего изменения"><b>ДПИ:</b>
+                    {{ convertDate(quiz.last_save) }}</span>
                   <div class="vr h-75 my-auto"/>
                   <div class="btn-group">
                     <button v-if="quiz.description"
@@ -133,12 +137,14 @@ onMounted(() => {
                     <button class="btn rounded-end-pill btn-sm btn-outline-dark">Статистика</button>
                   </div>
                   <div class="vr h-75 my-auto"/>
-                  <button class="btn rounded-pill btn-sm btn-outline-dark">Предпросмотр</button>
+                  <button @click="$router.push({name: 'Quiz', params: {id: quiz.quiz_id}})"
+                          title="Решение викторины даже если она не опубликована"
+                      class="btn rounded-pill btn-sm btn-outline-dark">Предпросмотр</button>
                   <div class="btn-group ms-auto">
                     <router-link class="btn rounded-start-pill btn-sm btn-dark  text-nowrap"
                                  :to="{name:'EditQuiz', params: {id: quiz.quiz_id}}">Изменить
                     </router-link>
-                    <button type="button" @click="deleteQuiz(quiz.quiz_id)"
+                    <button type="button" @click="confirmModal.show = true; confirmModal.id = quiz.quiz_id;"
                             class="btn rounded-end-pill btn-sm btn-danger  text-nowrap">Удалить
                     </button>
                   </div>
@@ -183,19 +189,23 @@ onMounted(() => {
                 </div>
               </div>
 
-              <section class="modal-background"
-                       v-if="showDescription.show === true && showDescription.id === quiz.quiz_id">
-                <div class="modal-window">
-                  <div class="modal-content">
-                    <div v-html="quiz.description" class="card-text description"></div>
+              <transition name="fade">
+                <section id="dialogModal" class="modal-background"
+                         v-if="showDescription.show === true && showDescription.id === quiz.quiz_id">
+                  <div class="modal-window rounded-4">
+                    <div class="hstack p-4 border-bottom">
+                      <h5 class="modal-title">{{ quiz.title }}</h5>
+                      <button @click="showDescription.show = false"
+                              class="btn ms-auto btn-close">
+                      </button>
+                    </div>
+                    <div class="modal-content p-4">
+                      <div v-html="quiz.description" class="card-text description"></div>
+                    </div>
                   </div>
-                  <div class="hstack px-2 pb-2">
-                    <button type="button" @click="showDescription.show = false"
-                            class="btn btn-outline-dark">Закрыть
-                    </button>
-                  </div>
-                </div>
-              </section>
+                </section>
+              </transition>
+
             </div>
           </div>
         </div>
