@@ -26,11 +26,11 @@ defineProps(['question', 'quiz_data', 'state'])
       </div>
 
       <div class="form-floating w-100">
-        <input required class="form-control rounded-4"
+        <input required class="form-control"
                placeholder="" id="questionTitle" v-model="question.settings.title">
         <label for="questionTitle">Название вопроса</label>
       </div>
-      <div class="card rounded-4">
+      <div class="card">
         <quill-editor v-model:content="question.settings.text" toolbar="essential" content-type="html"
                       placeholder="Текст вопроса" theme="snow"></quill-editor>
       </div>
@@ -65,7 +65,7 @@ defineProps(['question', 'quiz_data', 'state'])
       <div class="d-flex flex-column gap-2">
         <div>
           <div class="form-floating">
-            <input type="number" class="form-control rounded-4" placeholder="" :id="'q' + question.settings.index + 'addScores'"
+            <input type="number" class="form-control" placeholder="" :id="'q' + question.settings.index + 'addScores'"
                    v-model="question.settings.addScoresPerAnswer" min="1" value="1">
             <label :for="'q' + question.settings.index + 'addScores'">Кол-во баллов за правильный ответ</label>
           </div>

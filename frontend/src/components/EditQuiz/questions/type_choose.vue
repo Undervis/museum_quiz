@@ -34,7 +34,7 @@ function setCorrectAnswer(index, type) {
     </button>
   </div>
   <!-- Добавление варианта ответа -->
-  <button class="btn rounded-pill btn-outline-dark" @click="addOption">
+  <button class="btn btn-outline-dark" @click="addOption">
     <img height="20" src="/src/assets/icons/plus-lg.svg">
   </button>
 </template>

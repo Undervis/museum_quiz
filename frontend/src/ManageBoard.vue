@@ -139,7 +139,8 @@ onMounted(() => {
                   <div class="vr h-75 my-auto"/>
                   <button @click="$router.push({name: 'Quiz', params: {id: quiz.quiz_id}})"
                           title="Решение викторины даже если она не опубликована"
-                      class="btn rounded-pill btn-sm btn-outline-dark">Предпросмотр</button>
+                          class="btn rounded-pill btn-sm btn-outline-dark">Предпросмотр
+                  </button>
                   <div class="btn-group ms-auto">
                     <router-link class="btn rounded-start-pill btn-sm btn-dark  text-nowrap"
                                  :to="{name:'EditQuiz', params: {id: quiz.quiz_id}}">Изменить
@@ -189,23 +190,20 @@ onMounted(() => {
                 </div>
               </div>
 
-              <transition name="fade">
-                <section id="dialogModal" class="modal-background"
-                         v-if="showDescription.show === true && showDescription.id === quiz.quiz_id">
-                  <div class="modal-window rounded-4">
-                    <div class="hstack p-4 border-bottom">
-                      <h5 class="modal-title">{{ quiz.title }}</h5>
-                      <button @click="showDescription.show = false"
-                              class="btn ms-auto btn-close">
-                      </button>
-                    </div>
-                    <div class="modal-content p-4">
-                      <div v-html="quiz.description" class="card-text description"></div>
-                    </div>
+              <section id="dialogModal" class="modal-background"
+                       v-if="showDescription.show === true && showDescription.id === quiz.quiz_id">
+                <div class="modal-window rounded-4">
+                  <div class="hstack p-4 border-bottom">
+                    <h5 class="modal-title">{{ quiz.title }}</h5>
+                    <button @click="showDescription.show = false"
+                            class="btn ms-auto btn-close">
+                    </button>
                   </div>
-                </section>
-              </transition>
-
+                  <div class="modal-content p-4">
+                    <div v-html="quiz.description" class="card-text description"></div>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </div>

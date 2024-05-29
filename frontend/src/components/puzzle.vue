@@ -5,12 +5,30 @@ import {onMounted, ref, defineEmits, onUpdated} from "vue";
 const props = defineProps(['img_url', 'rows', 'cols', 'strokeSoftness', 'strokeColor', 'strokeWidth', 'shuffle', 'context'])
 
 function calcPieceSize(width, height, rows, columns, elSize) {
-  let scale_decimal = 1
-  while ((elSize.width - 50 < width) || elSize.height - 50 < height) {
-    width /= scale_decimal
-    height /= scale_decimal
-    scale_decimal += 0.01
+  /*
+  Функция считает размер кусочков пазла исходя из размеров изображения, размеров холста, кол-ва столбцов и строк
+  @width: Ширина изображения
+  @height: Высота изображения
+  @rows: Кол-во строк
+  @columns: Кол-во столбцов
+  @elSize: Размеры холста
+  @pieceSize: Размер кусочка пазла
+  */
+  let scale_divider = 1
+  if (width > elSize.width - 50 || height > elSize.height - 50) {
+    while ((elSize.width - 50 < width) || elSize.height - 50 < height) {
+      width /= scale_divider
+      height /= scale_divider
+      scale_divider += 0.01
+    }
+  } else {
+    while ((elSize.width - 50 > width) || elSize.height - 50 > height) {
+      width /= scale_divider
+      height /= scale_divider
+      scale_divider -= 0.01
+    }
   }
+
   const pieceWidth = width / columns;
   const pieceHeight = height / rows;
   return {x: pieceWidth, y: pieceHeight}
@@ -87,12 +105,5 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   min-height: 40rem;
-}
-
-.toolbar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 100;
 }
 </style>

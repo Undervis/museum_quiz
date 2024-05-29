@@ -1,19 +1,22 @@
 <script setup>
 function allowFullscreen() {
-  if (document.fullscreenElement) {
+  if (checkFullscreen()) {
     document.exitFullscreen();
   } else {
     document.documentElement.requestFullscreen();
   }
 }
+
+function checkFullscreen() {
+  return document.fullscreenElement
+}
 </script>
 
 <template>
-  <button @click="allowFullscreen"
-          class="btn btn-lg m-4 btn-light rounded-circle position-fixed bottom-0"
-          style="aspect-ratio: 1; z-index: 1500">
-    <img src="/src/assets/icons/fullscreen.svg">
-  </button>
+  <a @click="allowFullscreen" type="button"
+     class="bg-transparent m-2 position-fixed top-0"
+     style="aspect-ratio: 1; z-index: 1500; height: 7rem">
+  </a>
   <router-view/>
   <div hidden>
     <svg viewBox="0 0 200 200" xmlns='http://www.w3.org/2000/svg'>
@@ -30,7 +33,7 @@ function allowFullscreen() {
             scale="10"
             xChannelSelector="R"
             yChannelSelector="G"
-            />
+        />
       </filter>
     </svg>
   </div>

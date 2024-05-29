@@ -17,12 +17,12 @@ const imgToUpload = ref()
         <input class="form-check-input" id="to_publish" v-model="quiz_data.to_publish" type="checkbox">
       </div>
     </div>
-    <div class="form-floating ">
-      <input type="text" required placeholder="" class="form-control rounded-4" v-model="quiz_data.title"
+    <div class="form-floating">
+      <input type="text" required placeholder="" class="form-control" v-model="quiz_data.title"
              maxlength="48">
       <label for="title">Название (Макс. 48 символов)</label>
     </div>
-    <div class="card rounded-4">
+    <div class="card">
       <quill-editor v-model:content="quiz_data.description" toolbar="essential" content-type="html"
                     placeholder="Описание викторины" theme="snow"></quill-editor>
     </div>
@@ -66,18 +66,33 @@ const imgToUpload = ref()
             <label class="btn rounded-end-pill btn-outline-dark btn-sm" for="typeAdult">Взрослый</label>
           </div>
         </div>
-        <div class="row d-inline-flex">
-          <span class="fs-6 text-uppercase"
-                title="Запрашивать имя в начале прохождения викторины">Запрашивать имя</span>
-          <div class="btn-group">
-            <input type="radio" @click="quiz_data.requiredName = true"
-                   :checked="'checked' ? quiz_data.requiredName : null"
-                   class="btn-check" id="reqNameOn" name="settings-reqName" autocomplete="off" checked>
-            <label class="btn rounded-start-pill btn-outline-dark btn-sm" for="reqNameOn">Да</label>
-            <input type="radio" @click="quiz_data.requiredName = false"
-                   :checked="'checked' ? !quiz_data.requiredName : null"
-                   class="btn-check" id="reqNameOff" name="settings-reqName" autocomplete="off">
-            <label class="btn rounded-end-pill btn-outline-dark btn-sm" for="reqNameOff">Нет</label>
+        <div class="row g-2 d-inline-flex">
+          <div class="col flex-column">
+            <span class="fs-6 text-uppercase"
+                  title="Запрашивать имя в начале прохождения викторины">Запрашивать имя</span>
+            <div class="btn-group w-100">
+              <input type="radio" @click="quiz_data.requiredName = true"
+                     :checked="'checked' ? quiz_data.requiredName : null"
+                     class="btn-check" id="reqNameOn" name="settings-reqName" autocomplete="off" checked>
+              <label class="btn rounded-start-pill btn-outline-dark btn-sm" for="reqNameOn">Да</label>
+              <input type="radio" @click="quiz_data.requiredName = false"
+                     :checked="'checked' ? !quiz_data.requiredName : null"
+                     class="btn-check" id="reqNameOff" name="settings-reqName" autocomplete="off">
+              <label class="btn rounded-end-pill btn-outline-dark btn-sm" for="reqNameOff">Нет</label>
+            </div>
+          </div>
+          <div class="col flex-column" title="Если нет, то в конце прохождения викторины не будет отображения баллов">
+            <span class="fs-6 text-uppercase">Отображать результаты</span>
+            <div class="btn-group w-100">
+              <input type="radio" @click="quiz_data.showResults = true"
+                     :checked="'checked' ? quiz_data.showResults : null"
+                     class="btn-check" id="showResultsOn" name="settings-showResults" autocomplete="off" checked>
+              <label class="btn rounded-start-pill btn-outline-dark btn-sm" for="showResultsOn">Да</label>
+              <input type="radio" @click="quiz_data.showResults = false"
+                     :checked="'checked' ? !quiz_data.showResults : null"
+                     class="btn-check" id="showResultsOff" name="settings-showResults" autocomplete="off">
+              <label class="btn rounded-end-pill btn-outline-dark btn-sm" for="showResultsOff">Нет</label>
+            </div>
           </div>
         </div>
         <div class="row d-inline-flex">

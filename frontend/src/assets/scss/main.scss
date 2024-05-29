@@ -25,6 +25,7 @@
   animation: fade 0.2s;
 }
 
+/*
 @keyframes fade {
   0% {
     opacity: 0;
@@ -38,6 +39,7 @@
   animation: fade-scale 0.2s ease-in-out backwards;
 }
 
+
 @keyframes fade-scale {
   0% {
     transform: scale(1.5);
@@ -50,6 +52,7 @@
     opacity: 1;
   }
 }
+*/
 
 .form-control:focus,
 .form-check-input:focus
@@ -81,6 +84,7 @@
   filter: invert(1);
 }
 
+/*
 .fade-left-enter-active,
 .fade-left-leave-active {
   transition: all 0.5s ease;
@@ -107,6 +111,7 @@
   filter: blur(10px);
   opacity: 0;
 }
+*/
 
 .btn:hover > .updownbadge::before {
   opacity: 100;
@@ -205,6 +210,7 @@ blockquote {
 }
 
 .description p {
+  margin: 0;
   font-size: 1.2em;
 }
 
@@ -257,6 +263,10 @@ blockquote {
 
   .card-footer {
     border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .form-control {

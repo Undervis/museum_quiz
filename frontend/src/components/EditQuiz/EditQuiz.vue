@@ -39,6 +39,7 @@ let quiz_data = ref({
   blur_bg: true,
   quiz_view: 0, // 0 - Both, 1 - Magnezius, 2 - Museum
   quiz_type: 0, // 0 - Children, 1 - Adult
+  showResults: true,
   requiredName: true
 })
 

@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="alert rounded-4 alert-danger p-2">
+  <div class="alert alert-danger p-2">
     <span>Изображения не сохраняются автоматически, сохраняйте их вручную</span>
   </div>
   <div class="d-flex gap-4 flex-wrap justify-content-between">
@@ -41,14 +41,14 @@ onMounted(() => {
                     :options="{aspectRatio: 1, showTitle: false}" @uploaded="e => img.file = e"
       />
       <div class="input-group">
-        <div class="input-group-text rounded-start-pill gap-2" title="Используется в вопросе">
+        <div class="input-group-text gap-2" title="Используется в вопросе">
           <input type="checkbox" v-model="img.used"
                  class="form-check-input my-auto"
                  :id="'q' + question.settings.index + '-img' + index + '-use-'">
           <label :for="'q' + question.settings.index + '-img' + index + '-use-'"
                  class="form-check-label">Использовать</label>
         </div>
-        <div class="input-group-text rounded-end-pill flex-grow-1 justify-content-center">
+        <div class="input-group-text flex-grow-1 justify-content-center">
           <input :disabled="'disabled' ? !img.used : null"
                  type="radio" class="form-check-input my-auto"
                  :checked="'checked' ? question.answers.correctOption.index === (index) : null"
