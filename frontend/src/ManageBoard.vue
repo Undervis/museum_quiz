@@ -1,7 +1,6 @@
 <script setup>
 import {inject, onMounted, ref} from "vue";
 import axios from "axios";
-import LoaderFigures from "@/components/loaderFigures.vue";
 import Toast_container from "@/components/toast_container.vue";
 import {useToast} from "vue-toastification";
 import LoaderBars from "@/components/loaderBars.vue";
@@ -12,9 +11,8 @@ import HeaderSearch from "@/components/headerSearch.vue";
 const toast = useToast()
 const router = useRouter()
 
-const searchQuery = ref("")
 const api_url = inject('api_url')
-const data = ref({})
+const data = ref(false)
 const filteredData = ref({})
 const showDescription = ref({
   show: false,
@@ -99,7 +97,7 @@ onMounted(() => {
         <span>На главную</span>
         <img src="/src/assets/icons/house.svg"/>
       </button>
-      <header-search :data="data" context="manage" @filtered="data => filteredData = data"/>
+      <header-search v-if="data" :data="data" context="manage" @filtered="filtered => filteredData = filtered"/>
       <router-link :to="{name:'EditQuiz', params: {id: 0}}">
         <button class="btn btn-dark rounded-pill ms-auto text-nowrap">
           <span>Создать новую</span>

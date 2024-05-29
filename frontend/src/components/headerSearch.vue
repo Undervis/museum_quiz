@@ -1,5 +1,5 @@
 <script setup>
-import {ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 
 const props = defineProps(['data', 'context'])
 const emit = defineEmits(['filtered'])
@@ -12,7 +12,9 @@ const sortOptions = ref({
 
 const filterOptions = ref({
   dateStart: null, dateEnd: null,
-  category: -1
+  category: "-1", published: "-1",
+
+  filtered: false
 })
 
 const showDropdown = ref({
@@ -22,34 +24,122 @@ const showDropdown = ref({
 
 const filteredData = ref(props.data)
 
-watch(filterOptions, () => {
-  filteredData.value = props.data.filter(item => {
-    let save_date = new Date(item.first_save.$date).getUTCSeconds()
-    let dateStart = (new Date(filterOptions.value.dateStart).toLocaleDateString() ? filterOptions.value.dateStart : null)
-    let dateEnd = (new Date(filterOptions.value.dateEnd).toLocaleDateString() ? filterOptions.value.dateEnd : null)
-    console.log(save_date, dateStart, dateEnd)
-    if (dateStart!== null && dateEnd!== null) {
-      return item.first_save >= dateStart && item.first_save <= dateEnd
-    } else if (dateStart!== null) {
-      return item.first_save >= dateStart
-    } else if (dateEnd!== null) {
-      return item.first_save <= dateEnd
+function resetFilter() {
+  filterOptions.value.dateStart = null
+  filterOptions.value.dateEnd = null
+  filterOptions.value.category = "-1"
+  filterOptions.value.published = "-1"
+  filterOptions.value.filtered = false
+  searchQuery.value = ''
+  showDropdown.value.filter = false
+  showDropdown.value.sort = false
+  filteredData.value = props.data
+  filterData()
+}
+
+function filterData() {
+  window.localStorage.setItem('filter_dateStart', filterOptions.value.dateStart ? filterOptions.value.dateStart.toString() : 'null')
+  window.localStorage.setItem('filter_dateEnd', filterOptions.value.dateEnd ? filterOptions.value.dateEnd.toString() : 'null')
+  window.localStorage.setItem('filter_category', filterOptions.value.category)
+  window.localStorage.setItem('filter_published', filterOptions.value.published)
+
+  filteredData.value = props.data
+  filteredData.value = filteredData.value.filter(item => {
+    let save_date = item.first_save.$date
+    let dateStart = filterOptions.value.dateStart ? new Date(filterOptions.value.dateStart).getTime() : null
+    let dateEnd = filterOptions.value.dateEnd ? new Date(filterOptions.value.dateEnd).getTime() : null
+    if (dateStart !== null && dateEnd !== null) {
+      window.localStorage.setItem('filter_filtered', 'true')
+      filterOptions.value.filtered = true
+      return save_date >= dateStart && save_date <= dateEnd
+    } else if (dateStart !== null) {
+      window.localStorage.setItem('filter_filtered', 'true')
+      filterOptions.value.filtered = true
+      return save_date >= dateStart
+    } else if (dateEnd !== null) {
+      window.localStorage.setItem('filter_filtered', 'true')
+      filterOptions.value.filtered = true
+      return save_date <= dateEnd
+    } else {
+      return true
+    }
+  })
+  filteredData.value = filteredData.value.filter(item => {
+    if (parseInt(filterOptions.value.category.toString()) !== -1) {
+      window.localStorage.setItem('filter_filtered', 'true')
+      filterOptions.value.filtered = true
+      return item.quiz_type === parseInt(filterOptions.value.category.toString())
+    } else {
+      return true
+    }
+  })
+  filteredData.value = filteredData.value.filter(item => {
+    if (parseInt(filterOptions.value.published.toString())!== -1) {
+      window.localStorage.setItem('filter_filtered', 'true')
+      filterOptions.value.filtered = true
+      return item.to_publish === (filterOptions.value.published.toString() === 'true')
+    } else {
+      return true
+    }
+  })
+  filteredData.value = filteredData.value.filter(item => {
+    if (searchQuery.value !== '') {
+      return item.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     } else {
       return true
     }
   })
   emit('filtered', filteredData.value)
+  sortData()
+}
+
+function sortData() {
+  window.localStorage.setItem('sort_name', sortOptions.value.name)
+  window.localStorage.setItem('sort_reversed', sortOptions.value.reversed.toString())
+
+  if (sortOptions.value.name === 'date'){
+    filteredData.value.sort((a, b) => a.first_save.$date - b.first_save.$date)
+  } else if (sortOptions.value.name === 'dateLast') {
+    filteredData.value.sort((a, b) => b.last_save.$date - a.last_save.$date)
+  } else if (sortOptions.value.name === 'title') {
+    filteredData.value.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortOptions.value.name === 'category') {
+    filteredData.value.sort((a, b) => a.quiz_type - b.quiz_type)
+  } else if (sortOptions.value.name === 'popularity') {
+    filteredData.value.sort((a, b) => b.answers_count - a.answers_count)
+  } else if (sortOptions.value.name === 'published') {
+    filteredData.value.sort((a, b) => a.to_publish - b.to_publish)
+  }
+  if (sortOptions.value.reversed) {
+    filteredData.value.reverse()
+  }
+  emit('filtered', filteredData.value)
+}
+
+watch(filterOptions, () => {
+  filterData()
 }, {deep: true})
 
 watch(searchQuery, async () => {
-  if (searchQuery !== '') {
-    filteredData.value = props.data.filter(item => {
-      return item.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    })
-  } else {
-    filteredData.value = props.data
-  }
-  emit('filtered', filteredData.value)
+  filterData()
+})
+
+watch(sortOptions, () => {
+  sortData()
+}, {deep: true})
+
+onMounted(() => {
+  filteredData.value = props.data
+  sortData()
+
+  filterOptions.value.dateStart = window.localStorage.getItem('filter_dateStart') !== 'null' ? window.localStorage.getItem('filter_dateStart') : null
+  filterOptions.value.dateEnd = window.localStorage.getItem('filter_dateEnd') !== 'null' ? window.localStorage.getItem('filter_dateEnd') : null
+  filterOptions.value.category = window.localStorage.getItem('filter_category')
+  filterOptions.value.published = window.localStorage.getItem('filter_published')
+  filterOptions.value.filtered = window.localStorage.getItem('filter_filtered') === 'true'
+
+  sortOptions.value.name = window.localStorage.getItem('sort_name') ? window.localStorage.getItem('sortName') : 'date'
+  sortOptions.value.reversed = window.localStorage.getItem('sort_reversed') === 'true'
 })
 </script>
 
@@ -58,7 +148,8 @@ watch(searchQuery, async () => {
          class="form-control rounded-pill" v-model="searchQuery" placeholder="Поиск...">
   <div class="btn-group">
     <div class="dropdown">
-      <button type="button" :class="{'btn-lg': context === 'main'}" @click="showDropdown.filter = !showDropdown.filter"
+      <button type="button" :class="{'btn-lg': context === 'main', 'active': filterOptions.filtered}"
+              @click="showDropdown.filter = !showDropdown.filter; showDropdown.sort = false"
               class="btn rounded-start-pill btn-outline-dark text-nowrap">
         <span>Фильтры</span>
         <img class="ms-2" src="/src/assets/icons/funnel.svg">
@@ -89,9 +180,20 @@ watch(searchQuery, async () => {
               </div>
             </div>
           </li>
+          <li class="dropdown-item-text" v-if="context !== 'main'">
+            <div class="row g-1 flex-nowrap">
+              <div class="col form-floating">
+                <select class="form-select" id="publish" v-model="filterOptions.published">
+                  <option value="-1">Все публикации</option>
+                  <option value="false">Не опубликовано</option>
+                  <option value="true">Опубликовано</option>
+                </select>
+                <label class="form-label" for="publish">Пуликация</label>
+              </div>
+            </div>
+          </li>
           <li class="dropdown-item-text hstack">
-            <button type="submit" class="btn btn-dark">Применить</button>
-            <button class="btn ms-auto btn-outline-dark">Сбросить</button>
+            <button @click="resetFilter" class="btn w-100 btn-outline-dark">Сбросить</button>
           </li>
         </ul>
       </form>
@@ -99,7 +201,8 @@ watch(searchQuery, async () => {
 
     <!-- Сортировка -->
     <div class="dropdown">
-      <button :class="{'btn-lg': context === 'main'}" @click="showDropdown.sort = !showDropdown.sort"
+      <button :class="{'btn-lg': context === 'main'}"
+              @click="showDropdown.sort = !showDropdown.sort; showDropdown.filter = false"
               class="btn rounded-end-pill btn-outline-dark text-nowrap">
         <span>Сортировка</span>
         <img class="ms-2" src="/src/assets/icons/sort-alpha-down.svg">
@@ -110,6 +213,11 @@ watch(searchQuery, async () => {
             <input type="radio" name="sortType" id="sortDate" class="form-check-input" v-model="sortOptions.name"
                    value="date">
             <label class="ms-2" for="sortDate">По дате создания</label>
+          </li>
+          <li class="dropdown-item">
+            <input type="radio" name="sortType" id="sortDateLast" class="form-check-input" v-model="sortOptions.name"
+                   value="dateLast">
+            <label class="ms-2" for="sortDateLast">По дате последнего изменения</label>
           </li>
           <li class="dropdown-item">
             <input type="radio" name="sortType" id="sortTitle" class="form-check-input" v-model="sortOptions.name"
@@ -125,6 +233,11 @@ watch(searchQuery, async () => {
             <input type="radio" name="sortType" id="sortPopularity" class="form-check-input" v-model="sortOptions.name"
                    value="popularity">
             <label class="ms-2" for="sortPopularity">По популярности</label>
+          </li>
+          <li class="dropdown-item" v-if="context !== 'main'">
+            <input type="radio" name="sortType" id="sortPublish" class="form-check-input" v-model="sortOptions.name"
+                   value="published">
+            <label class="ms-2" for="sortPublish">По публикации</label>
           </li>
           <li class="dropdown-divider"/>
           <li class="dropdown-item">

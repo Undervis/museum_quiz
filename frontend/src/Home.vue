@@ -12,12 +12,13 @@ import HeaderSearch from "@/components/headerSearch.vue";
 const toast = useToast()
 const router = useRouter()
 
-const searchQuery = ref("")
 const api_url = inject('api_url')
-const data = ref([])
+const data = ref(false)
 const state = ref({
   loading: false
 })
+
+const filteredData = ref()
 
 function toggleDescription(quiz_id) {
   $('#description-' + quiz_id).slideToggle(500)
@@ -32,6 +33,7 @@ onMounted(() => {
       .then((response) => {
         data.value = response.data
         data.value = data.value.filter(e => e.to_publish)
+        filteredData.value = data.value
         state.value.loading = false
       })
       .catch((error) => {
@@ -56,12 +58,12 @@ onMounted(() => {
   <main class="container">
     <div class="hstack gap-3 my-4">
       <img height="46" src="/src/assets/logo.svg"/>
-      <header-search :data="data" context="main"/>
+      <header-search v-if="data" :data="data" @filtered="filtered => filteredData = filtered" context="main"/>
     </div>
 
-    <section v-if="data.length > 0">
+    <section v-if="data">
       <div class="d-flex flex-wrap gap-4 mb-4">
-        <div v-for="item in data" :key="item.quiz_id" class="col"
+        <div v-for="item in filteredData" :key="item.quiz_id" class="col"
              style="flex-basis: 20rem; max-width: 40rem; aspect-ratio: 1">
           <div class="card rounded-4 overflow-hidden h-100">
             <div class="position-relative d-flex">
@@ -117,6 +119,9 @@ onMounted(() => {
         </div>
       </div>
     </section>
+    <span v-if="!data || filteredData.length === 0" class="alert alert-info w-100">
+      Ой, кажется тут пусто :(
+    </span>
   </main>
 </template>
 
