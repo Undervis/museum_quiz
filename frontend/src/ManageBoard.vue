@@ -7,6 +7,7 @@ import LoaderBars from "@/components/loaderBars.vue";
 import {useRouter} from "vue-router";
 import ConfirmModal from "@/components/confirmModal.vue";
 import HeaderSearch from "@/components/headerSearch.vue";
+import Statistic from "@/components/statistic.vue";
 
 const toast = useToast()
 const router = useRouter()
@@ -17,6 +18,11 @@ const filteredData = ref({})
 const showDescription = ref({
   show: false,
   id: -1
+})
+
+const showStatistic = ref({
+  show: false,
+  quiz_id: "663deeb8248f127372d2dc7f"
 })
 
 const confirmModal = ref({
@@ -89,7 +95,7 @@ onMounted(() => {
                  msg="Это действие невозможно отменить!"
                  @confirm="deleteQuiz(confirmModal.id)" @dismiss="confirmModal.show = false"
   />
-
+  <statistic v-if="showStatistic.show" :quiz_id="showStatistic.quiz_id"/>
   <section class="container">
     <div class="hstack gap-3 py-4">
       <button @click="$router.push('/')"

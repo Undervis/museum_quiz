@@ -12,6 +12,7 @@
     "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "circle-progress.vue": "^3.2.1",
     "headbreaker": "^3.0.0",
     "jquery": "^3.7.1",
     "konva": "^9.3.6",
