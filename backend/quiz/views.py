@@ -135,6 +135,7 @@ def calculate_result(answer_id=None, answer=None):
     mode_1_trigger = False
     max_score = 0
     timer = answer['timer']
+    answers = answer['options']
 
     def set_results(question_, result):
         nonlocal corrects_count, score, questions_stats
@@ -167,5 +168,5 @@ def calculate_result(answer_id=None, answer=None):
             max_score += question['settings']['addScoresPerAnswer']
             set_results(question, True if answer['answer'] else False)
 
-    return {'questions_stats': questions_stats, 'score': score, 'max_score': max_score, 'timer': timer,
-            'corrects_count': corrects_count, 'questions_count': len(questions)}
+    return {'questions_stats': questions_stats, 'answers': answers, 'score': score, 'max_score': max_score,
+            'timer': timer, 'corrects_count': corrects_count, 'questions_count': len(questions)}

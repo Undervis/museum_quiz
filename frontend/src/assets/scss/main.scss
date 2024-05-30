@@ -151,6 +151,14 @@ body::-webkit-scrollbar-track {
   margin: 1rem;
 }
 
+.scroll-dark::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.scroll-dark::-webkit-scrollbar-thumb {
+  background-color: var(--bs-dark);
+}
+
 *::-webkit-scrollbar-thumb {
   background-color: var(--bs-light);
   border-radius: 20px;

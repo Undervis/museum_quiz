@@ -12,7 +12,7 @@ function isActive(index) {
 <template>
   <section class="sticky-top" style="z-index: 1">
     <div class="card rounded-4">
-      <div class="d-flex flex-column gap-2 card-body pe-2 me-2 overflow-y-scroll" style="max-height: 87vh">
+      <div class="d-flex flex-column gap-2 card-body pe-2 me-2 scroll-dark overflow-y-scroll" style="max-height: 87vh">
         <router-link :to="{hash: '#general-settings'}">
           <button class="btn btn-outline-dark w-100"
                   :class="{'active': $router.currentRoute.value.hash === '#general-settings'}">Параметры

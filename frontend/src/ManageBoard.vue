@@ -21,8 +21,8 @@ const showDescription = ref({
 })
 
 const showStatistic = ref({
-  show: false,
-  quiz_id: "663deeb8248f127372d2dc7f"
+  show: true,
+  quiz_id: "6649cf45f3dbccd1a0993169"
 })
 
 const confirmModal = ref({
