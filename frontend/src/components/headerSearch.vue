@@ -30,6 +30,7 @@ function resetFilter() {
   filterOptions.value.category = "-1"
   filterOptions.value.published = "-1"
   filterOptions.value.filtered = false
+  window.localStorage.setItem('filter_filtered', 'false')
   searchQuery.value = ''
   showDropdown.value.filter = false
   showDropdown.value.sort = false

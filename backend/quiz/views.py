@@ -107,8 +107,8 @@ def send_answer(request, quiz_id):
     new_answer.datestamp = datetime.now()
     result = calculate_result(answer=new_answer)
     new_answer.score = result['score']
-    Quiz.objects(id=quiz_id).update(inc__answers_count=1)
     new_answer.save()
+    Quiz.objects(id=quiz_id).update(set__answers_count=len(Answer.objects(quiz_id=quiz_id)))
     return HttpResponse(json.dumps({'answer_id': str(new_answer.id), 'results': result}),
                         status=status.HTTP_201_CREATED)
 
@@ -136,6 +136,8 @@ def calculate_result(answer_id=None, answer=None):
     max_score = 0
     timer = answer['timer']
     answers = answer['options']
+    datestamp = str(answer['datestamp'])
+    username = answer['user_name'] if answer['user_name'] else None
 
     def set_results(question_, result):
         nonlocal corrects_count, score, questions_stats
@@ -168,5 +170,6 @@ def calculate_result(answer_id=None, answer=None):
             max_score += question['settings']['addScoresPerAnswer']
             set_results(question, True if answer['answer'] else False)
 
-    return {'questions_stats': questions_stats, 'answers': answers, 'score': score, 'max_score': max_score,
-            'timer': timer, 'corrects_count': corrects_count, 'questions_count': len(questions)}
+    return {'questions_stats': questions_stats, 'datestamp': datestamp, 'answers': answers, 'score': score,
+            'user_name': username,
+            'max_score': max_score, 'timer': timer, 'corrects_count': corrects_count, 'questions_count': len(questions)}

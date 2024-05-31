@@ -21,8 +21,8 @@ const showDescription = ref({
 })
 
 const showStatistic = ref({
-  show: true,
-  quiz_id: "6649cf45f3dbccd1a0993169"
+  show: false,
+  quiz_id: -1
 })
 
 const confirmModal = ref({
@@ -33,6 +33,11 @@ const confirmModal = ref({
 const state = ref({
   loading: false
 })
+
+function openPreview(quiz_id) {
+  let url = router.resolve({name: 'Quiz', params: {id: quiz_id}})
+  window.open(url.href, '_blank')
+}
 
 function deleteQuiz(quiz_id) {
   state.value.loading = true
@@ -95,7 +100,7 @@ onMounted(() => {
                  msg="Это действие невозможно отменить!"
                  @confirm="deleteQuiz(confirmModal.id)" @dismiss="confirmModal.show = false"
   />
-  <statistic v-if="showStatistic.show" :quiz_id="showStatistic.quiz_id"/>
+  <statistic @dismiss="showStatistic.show = false" v-if="showStatistic.show" :quiz_id="showStatistic.quiz_id"/>
   <section class="container">
     <div class="hstack gap-3 py-4">
       <button @click="$router.push('/')"
@@ -138,10 +143,11 @@ onMounted(() => {
                             class="btn rounded-start-pill btn-sm btn-outline-dark">Описание
                     </button>
                     <button disabled v-else class="btn rounded-start-pill btn-dark btn-sm mb-0">Описания нет</button>
-                    <button class="btn rounded-end-pill btn-sm btn-outline-dark">Статистика</button>
+                    <button @click="showStatistic.show = true; showStatistic.quiz_id = quiz.quiz_id"
+                        class="btn rounded-end-pill btn-sm btn-outline-dark">Статистика</button>
                   </div>
                   <div class="vr h-75 my-auto"/>
-                  <button @click="$router.push({name: 'Quiz', params: {id: quiz.quiz_id}})"
+                  <button @click="openPreview(quiz.quiz_id)"
                           title="Решение викторины даже если она не опубликована"
                           class="btn rounded-pill btn-sm btn-outline-dark">Предпросмотр
                   </button>
@@ -183,12 +189,12 @@ onMounted(() => {
                       <div class="col">{{ quiz.answers_count }}</div>
                     </div>
                     <div class="row" title="Средний процент правильных ответов">
-                      <div class="col"><b>СППО:</b></div>
-                      <div class="col">73%</div>
+                      <div class="col"><b>Тема: </b></div>
+                      <div class="col">{{ quiz.theme === "classic" ? 'Классическая' : 'Современная' }}</div>
                     </div>
                     <div class="row">
-                      <div class="col"><b>Средний балл:</b></div>
-                      <div class="col">70/140</div>
+                      <div class="col"><b>Отображать результаты:</b></div>
+                      <div class="col">{{ quiz.showResults ? 'Да' : 'Нет' }}</div>
                     </div>
                   </section>
                 </div>
