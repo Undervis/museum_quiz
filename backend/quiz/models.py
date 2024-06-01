@@ -7,3 +7,4 @@ class Quiz(DynamicDocument):
 
 class Answer(DynamicDocument):
     pass
+

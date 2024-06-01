@@ -1,8 +1,12 @@
 import json
 from datetime import datetime
 
+from django.contrib.auth import authenticate
 from django.core.files.storage import default_storage
+from django.db import IntegrityError
 from django.http import HttpResponse
+from rest_framework.authtoken.admin import User
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions, status
 from .models import *
@@ -14,8 +18,48 @@ def index(request):
     return HttpResponse("Connection successful", status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+def login_user(request):
+    if request.method == 'POST':
+        user_login = request.data['username']
+        user_password = request.data['password']
+        user = authenticate(request, username=user_login, password=user_password)
+        if user is not None:
+            try:
+                token = Token.objects.get(user=user)
+            except Token.DoesNotExist:
+                token = Token.objects.create(user=user)
+            return HttpResponse(json.dumps({'username': user.username, 'token': token.key}), status=status.HTTP_200_OK)
+        else:
+            return HttpResponse(json.dumps({'msg': 'Login/Password is invalid'}), status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def create_user(request):
+    body = json.loads(request.body)
+    new_user = User.objects.create_user(username=body['username'], password=body['password'])
+    try:
+        new_user.save()
+        token = Token.objects.create(user=new_user)
+    except IntegrityError:
+        return HttpResponse(json.dumps({'msg': 'User already exists'}), status=status.HTTP_409_CONFLICT)
+    return HttpResponse(json.dumps({'id': str(new_user.id), 'token': token.key}), status=status.HTTP_201_CREATED)
+
+
 @api_view(['GET'])
-# @permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
+def logout(request):
+    request.user.auth_token.delete()
+    return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+def delete_user(request, username):
+    User.objects.get(username=username).delete()
+    return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
 def get_quiz(request, quiz_id):
     data = Quiz.objects(id=quiz_id)[0]
     data.quiz_id = quiz_id
@@ -29,6 +73,7 @@ def get_quizes(request):
 
 
 @api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
 def create_quiz(request):
     body = request.body
     new_quiz = Quiz.from_json(body)
@@ -40,6 +85,7 @@ def create_quiz(request):
 
 
 @api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
 def update_quiz(request, quiz_id):
     body = json.loads(request.body)
     Quiz.objects(id=quiz_id).update_one(**body, set__last_save=datetime.now())
@@ -47,8 +93,13 @@ def update_quiz(request, quiz_id):
 
 
 @api_view(['DELETE'])
+@permission_classes([permissions.IsAuthenticated])
 def delete_quiz(request, quiz_id):
     Quiz.objects(id=quiz_id).delete()
+    files = default_storage.listdir('')[1]
+    for file in files:
+        if file.startswith(quiz_id):
+            default_storage.delete(file)
     return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 

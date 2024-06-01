@@ -41,15 +41,15 @@ function openPreview(quiz_id) {
 
 function deleteQuiz(quiz_id) {
   state.value.loading = true
-  axios.delete(`${api_url}/delete_quiz/${quiz_id}`)
+  axios.delete(`${api_url}/delete_quiz/${quiz_id}`, {headers: {'Authorization': `Token ${localStorage.getItem('token')}`}})
       .then(() => {
         axios.get(`${api_url}/get_quizes/`)
             .then((response) => {
               data.value = response.data
               filteredData.value = data.value
               data.value.showDescription = false
-              confirmModal.show = false
-              confirmModal.id = -1
+              confirmModal.value.show = false
+              confirmModal.value.id = -1
               state.value.loading = false
             })
             .catch((error) => {
@@ -69,28 +69,32 @@ function convertDate(date) {
 }
 
 onMounted(() => {
-  state.value.loading = true
-  axios.get(`${api_url}/get_quizes/`)
-      .then((response) => {
-        data.value = response.data
-        filteredData.value = data.value
-        data.value.showDescription = false
-        state.value.loading = false
-      })
-      .catch((error) => {
-        console.error(error)
-        let toast_content = {
-          component: Toast_container,
-          props: {
-            msg: "Ошибка при загрузке данных",
-            data: error
+  if (!localStorage.getItem('token')) {
+    router.replace('/login')
+  } else {
+    state.value.loading = true
+    axios.get(`${api_url}/get_quizes/`, {headers: {'Authorization': `Token ${localStorage.getItem('token')}`}})
+        .then((response) => {
+          data.value = response.data
+          filteredData.value = data.value
+          data.value.showDescription = false
+          state.value.loading = false
+        })
+        .catch((error) => {
+          console.error(error)
+          let toast_content = {
+            component: Toast_container,
+            props: {
+              msg: "Ошибка при загрузке данных",
+              data: error
+            }
           }
-        }
-        toast.error(toast_content, {timeout: 10000, closeButton: false})
-        setTimeout(() => {
-          router.go()
-        }, 10000)
-      })
+          toast.error(toast_content, {timeout: 10000, closeButton: false})
+          setTimeout(() => {
+            router.go()
+          }, 10000)
+        })
+  }
 })
 </script>
 
@@ -103,6 +107,8 @@ onMounted(() => {
   <statistic @dismiss="showStatistic.show = false" v-if="showStatistic.show" :quiz_id="showStatistic.quiz_id"/>
   <section class="container">
     <div class="hstack gap-3 py-4">
+      <button title="Выход из аккаунта"
+          @click="$router.replace('/logout')" class="btn btn-danger rounded-pill">Выйти</button>
       <button @click="$router.push('/')"
               class="btn btn-outline-dark d-flex text-nowrap justify-content-center gap-2 align-items-center ms-auto rounded-pill">
         <span>На главную</span>

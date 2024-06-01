@@ -92,7 +92,7 @@ function deleteQuestion(question) {
 // Первое сохранение записи
 function firstSave() {
   state.value.saveStatus = true
-  axios.post(api_url + '/add_quiz', quiz_data.value)
+  axios.post(api_url + '/add_quiz', quiz_data.value, {headers: {'Authorization': `Token ${localStorage.getItem('token')}`}})
       .then((response) => {
         state.value.saveStatus = false
         quiz_data.value.quiz_id = response.data.id
@@ -111,9 +111,13 @@ onMounted(() => {
   if (!router.currentRoute.value.hash) {
     router.replace({hash: '#general-settings'})
   }
+  if (!localStorage.getItem('token')) {
+    router.replace({path: '/login'})
+    return
+  }
   if (router.currentRoute.value.params.id !== '0') {
     state.value.saveStatus = true
-    axios.get(api_url + '/get_quiz/' + router.currentRoute.value.params.id)
+    axios.get(api_url + '/get_quiz/' + router.currentRoute.value.params.id, {headers: {'Authorization': `Token ${localStorage.getItem('token')}`}})
         .then((response) => {
           quiz_data.value = response.data
           delete quiz_data.value._id
@@ -144,7 +148,7 @@ onMounted(() => {
 const update = debounce(() => {
   state.value.debounced = false
   state.value.saveStatus = true
-  axios.put(api_url + '/update_quiz/' + quiz_data.value.quiz_id, quiz_data.value)
+  axios.put(api_url + '/update_quiz/' + quiz_data.value.quiz_id, quiz_data.value, {headers: {'Authorization': `Token ${localStorage.getItem('token')}`}})
       .then((response) => {
         state.value.lastSaved = response.data.last_save
         state.value.saveStatus = false

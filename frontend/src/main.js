@@ -16,5 +16,5 @@ const toastOptions = {
 }
 app.use(Toast, toastOptions)
 app.component('QuillEditor', QuillEditor)
-app.provide('api_url', `${import.meta.env.VITE_API_URL}api`)
+app.provide('api_url', document.location.origin + ':8000/api')
 app.mount('#app')

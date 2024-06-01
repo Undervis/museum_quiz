@@ -24,7 +24,20 @@ const routes = [
         path: "/quiz/:id",
         name: "Quiz",
         component: Quiz
-    }
+    },
+    {
+        path: "/login",
+        component: () => import("@/Login.vue")
+    },
+    {
+        path: "/logout",
+        component: () => import("@/Logout.vue")
+    },
+    {
+        path: "/:catchAll(.*)",
+        name: "NotFound",
+        component: () => import("@/NotFound.vue")
+    },
 ]
 
 const router = createRouter({

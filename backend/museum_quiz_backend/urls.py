@@ -1,8 +1,12 @@
-from django.contrib import admin
 from django.urls import path
 from quiz import views
 
 urlpatterns = [
+    path('api/login/', views.login_user),
+    path('api/create_user/', views.create_user),
+    path('api/delete_user/<str:username>', views.delete_user),
+    path('api/logout/', views.logout),
+    #
     path('api/add_quiz', views.create_quiz),
     path('api/update_quiz/<str:quiz_id>', views.update_quiz),
     path('api/get_quizes/', views.get_quizes),
