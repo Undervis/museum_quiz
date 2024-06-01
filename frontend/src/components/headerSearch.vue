@@ -39,10 +39,10 @@ function resetFilter() {
 }
 
 function filterData() {
-  window.localStorage.setItem('filter_dateStart', filterOptions.value.dateStart ? filterOptions.value.dateStart.toString() : 'null')
-  window.localStorage.setItem('filter_dateEnd', filterOptions.value.dateEnd ? filterOptions.value.dateEnd.toString() : 'null')
-  window.localStorage.setItem('filter_category', filterOptions.value.category)
-  window.localStorage.setItem('filter_published', filterOptions.value.published)
+  localStorage.setItem('filter_dateStart', filterOptions.value.dateStart ? filterOptions.value.dateStart.toString() : 'null')
+  localStorage.setItem('filter_dateEnd', filterOptions.value.dateEnd ? filterOptions.value.dateEnd.toString() : 'null')
+  localStorage.setItem('filter_category', filterOptions.value.category)
+  localStorage.setItem('filter_published', filterOptions.value.published)
 
   filteredData.value = props.data
   filteredData.value = filteredData.value.filter(item => {
@@ -50,15 +50,15 @@ function filterData() {
     let dateStart = filterOptions.value.dateStart ? new Date(filterOptions.value.dateStart).getTime() : null
     let dateEnd = filterOptions.value.dateEnd ? new Date(filterOptions.value.dateEnd).getTime() : null
     if (dateStart !== null && dateEnd !== null) {
-      window.localStorage.setItem('filter_filtered', 'true')
+      localStorage.setItem('filter_filtered', 'true')
       filterOptions.value.filtered = true
       return save_date >= dateStart && save_date <= dateEnd
     } else if (dateStart !== null) {
-      window.localStorage.setItem('filter_filtered', 'true')
+      localStorage.setItem('filter_filtered', 'true')
       filterOptions.value.filtered = true
       return save_date >= dateStart
     } else if (dateEnd !== null) {
-      window.localStorage.setItem('filter_filtered', 'true')
+      localStorage.setItem('filter_filtered', 'true')
       filterOptions.value.filtered = true
       return save_date <= dateEnd
     } else {
@@ -95,8 +95,8 @@ function filterData() {
 }
 
 function sortData() {
-  window.localStorage.setItem('sort_name', sortOptions.value.name)
-  window.localStorage.setItem('sort_reversed', sortOptions.value.reversed.toString())
+  localStorage.setItem('sort_name', sortOptions.value.name)
+  localStorage.setItem('sort_reversed', sortOptions.value.reversed.toString())
 
   if (sortOptions.value.name === 'date'){
     filteredData.value.sort((a, b) => a.first_save.$date - b.first_save.$date)
@@ -133,14 +133,14 @@ onMounted(() => {
   filteredData.value = props.data
   sortData()
 
-  filterOptions.value.dateStart = window.localStorage.getItem('filter_dateStart') !== 'null' ? window.localStorage.getItem('filter_dateStart') : null
-  filterOptions.value.dateEnd = window.localStorage.getItem('filter_dateEnd') !== 'null' ? window.localStorage.getItem('filter_dateEnd') : null
-  filterOptions.value.category = window.localStorage.getItem('filter_category')
-  filterOptions.value.published = window.localStorage.getItem('filter_published')
-  filterOptions.value.filtered = window.localStorage.getItem('filter_filtered') === 'true'
+  filterOptions.value.dateStart = localStorage.getItem('filter_dateStart') !== 'null' ? localStorage.getItem('filter_dateStart') : null
+  filterOptions.value.dateEnd = localStorage.getItem('filter_dateEnd') !== 'null' ? localStorage.getItem('filter_dateEnd') : null
+  filterOptions.value.category = localStorage.getItem('filter_category') ? localStorage.getItem('filter_category') : -1
+  filterOptions.value.published = localStorage.getItem('filter_published') ? localStorage.getItem('filter_published') : -1
+  filterOptions.value.filtered = localStorage.getItem('filter_filtered') === 'true'
 
-  sortOptions.value.name = window.localStorage.getItem('sort_name') ? window.localStorage.getItem('sortName') : 'date'
-  sortOptions.value.reversed = window.localStorage.getItem('sort_reversed') === 'true'
+  sortOptions.value.name = localStorage.getItem('sort_name') ? localStorage.getItem('sortName') : 'date'
+  sortOptions.value.reversed = localStorage.getItem('sort_reversed') === 'true'
 })
 </script>
 
