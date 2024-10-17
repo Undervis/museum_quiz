@@ -1,4 +1,4 @@
-FROM python:3-slim
+FROM python:3.12-slim
 LABEL authors="Undervis, Thinker90"
 ENV PYTHONUNBUFFERED 1
 EXPOSE 8000
